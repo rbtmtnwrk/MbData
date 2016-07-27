@@ -10,7 +10,7 @@
     "version": "dev-master",
     "autoload": {
         "psr-4": {
-            "MbData\\": "src/MbData/"
+            "MbData\\": "src/"
         }
     }
 }
