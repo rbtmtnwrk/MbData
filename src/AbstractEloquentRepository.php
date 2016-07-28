@@ -16,7 +16,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     protected $orderBys         = [];
     protected $notResettable     = ['model', 'transformer'];
 
-    use \Mb\ResettableTrait;
+    use \MbSupport\ResettableTrait;
 
     public function getColumns($columns = null)
     {
