@@ -1,5 +1,5 @@
 {
-    "name": "MbData",
+    "name": "mbdata",
     "description": "Data transformation and storage library.",
     "type": "library",
     "authors": [
