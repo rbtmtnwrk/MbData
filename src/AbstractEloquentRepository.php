@@ -62,6 +62,13 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
+    public function newQuery()
+    {
+        $this->reset();
+
+        return $this;
+    }
+
     public function find($id, $columns = null)
     {
         $columns = $this->getColumns($columns);

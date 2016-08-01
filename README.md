@@ -112,6 +112,8 @@ setTransformer($transformer)
 
 transform()
 
+newQuery()
+
 find($id, $columns = null)
 
 all($columns = null)
@@ -147,8 +149,6 @@ thenGet()
 update($data)
 
 delete()
-
-reset() // Via the \Mb\ResetableTrait
 
 ```
 

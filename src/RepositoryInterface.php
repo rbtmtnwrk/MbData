@@ -14,6 +14,8 @@ interface RepositoryInterface
 
     public function transform();
 
+    public function newQuery();
+
     public function find($id, $columns = null);
 
     public function all($columns = null);
