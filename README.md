@@ -5,6 +5,7 @@ MbData is a library that contains classes for data storage and transformation. T
 - [Repositories](#repositories)
     - [Repository Transformers](#repository-transformers)
     - [then Methods](#then-methods)
+    - [then and Relations](#then-and-relations)
     - [Available Methods](#available-methods)
 - [Transformers](#transformers)
     - [Transformer Relations](#transformer-relations)
@@ -92,6 +93,31 @@ $transformedFoo = $FooRepository->save($data)->thenTransform();
 $transformedFoo = $FooRepository->create($data)->thenTransform();
 
 ```
+### then and Relations
+
+In cases when you save or create and entity that needs some relational data loaded after the operation, use thenGetWith | thenTransformWith:
+
+```
+/**
+ * Saves Foo, loads Bar relation with Bar's Baz relation,
+ * and Fiz relation, and then returns Foo transformed.
+ */
+
+$foo = $FooRepository->newQuery()
+    ->where('id', 1)
+    ->save('name' => 'Foo Bazzle')
+    ->thenTransformWith('bar.baz', 'fiz');
+
+/**
+ * Creates new Foo, loads it's Group relation,
+ * and then returns Foo transformed.
+ */
+
+$newFoo = $FooRepository->newQuery()
+    ->create(['name' => 'Foo Dizzle', 'group_id' => 1])
+    ->thenTransformWith('group');
+```
+
 
 ## Available Methods
 
@@ -116,9 +142,11 @@ newQuery()
 
 find($id, $columns = null)
 
-all($columns = null)
-
 first($columns = null)
+
+get($columns = null)
+
+all($columns = null)
 
 where($column, $operator = null, $value = null)
 
@@ -136,6 +164,8 @@ orderBy($column, $direction = 'asc')
 
 with($with)
 
+load($relations)
+
 getBuilder()
 
 create($data)
@@ -144,7 +174,11 @@ save($data, $entity = null)
 
 thenTransform()
 
+thenTransformWith($with)
+
 thenGet()
+
+thenGetWith($with)
 
 update($data)
 
@@ -177,8 +211,8 @@ class FooTransformer extends AbstractTransformer
 // Which creates these properties in the transformed array:
 
 $fooTransformed = [
-    'id'  => [foo "id" value],
-    'foo' => [foo "foo" value],
+    'id'  => 1,
+    'foo' => 'Baz',
 ]
 ```
 
@@ -195,7 +229,7 @@ class FooTransformer extends AbstractTransformer
     public function build($model)
     {
         $array = parent::build($model);
-        $array['foo_special'] = doSomethingSpecial(model->$foo);
+        $array['foo_special'] = doSomethingSpecial($model->foo);
 
         return $array;
     }
