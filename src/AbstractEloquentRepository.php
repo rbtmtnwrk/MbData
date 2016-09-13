@@ -71,24 +71,30 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
 
     public function find($id, $columns = null)
     {
-        $columns = $this->getColumns($columns);
         $this->where('id', $id);
 
-        return $this->transform ? $this->getTransformed($columns, 0) : $this->getBuilder()->first($columns);
-    }
-
-    public function all($columns = null)
-    {
-        $columns = $this->getColumns($columns);
-
-        return $this->transform ? $this->getTransformed($columns) : $this->getBuilder()->get($columns);
+        return $this->first($columns);
     }
 
     public function first($columns = null)
     {
-        $columns = $this->getColumns($columns);
+        $columns      = $this->getColumns($columns);
+        $this->entity = $this->getBuilder()->first($columns);
 
-        return $this->transform ? $this->getTransformed($columns, 0) : $this->getBuilder()->first($columns);
+        return $this->transform ? $this->doTransformation($this->entity) : $this->entity;
+    }
+
+    public function get($columns = null)
+    {
+        return $this->all($columns);
+    }
+
+    public function all($columns = null)
+    {
+        $columns      = $this->getColumns($columns);
+        $this->entity = $this->getBuilder()->get($columns);
+
+        return $this->transform ? $this->doTransformation($this->entity) : $this->entity;
     }
 
     public function where($column, $operator = null, $value = null)
@@ -155,6 +161,18 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
+    public function load($relations)
+    {
+        if (! $this->entity) {
+            throw new \Exception('No entity found for load operation.');
+        }
+
+        $relations = is_array($relations) ? $relations : func_get_args();
+        $this->entity->load($relations);
+
+        return $this;
+    }
+
     /**
      * Extend this method with your own builder logic.
      *
@@ -198,22 +216,12 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $builder;
     }
 
-    protected function getTransformed($columns = null, $index = null)
+    protected function doTransformation($transformable)
     {
-        $builder = $this->getBuilder();
-        $models  = $builder->get($this->getColumns($columns));
-
-        if (! $models) {
+        if (! $transformable) {
             return null;
         }
 
-        $array = $this->doTransformation($models);
-
-        return is_null($index) ? $array : $array[$index];
-    }
-
-    protected function doTransformation($transformable)
-    {
         $transform = $this->transformer instanceof \Closure ? $this->transformer : $this->transformer->closure();
 
         if ($transformable instanceof \Traversable) {
@@ -281,22 +289,46 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
-    public function thenTransform()
+    public function thenTransform($with = null)
     {
         if (! $this->entity) {
             throw new \Exception('No entity to transform');
         }
 
+        if ($with) {
+            $with = is_array($with) ? $with : func_get_args();
+            $this->load($with);
+        }
+
         return $this->doTransformation($this->entity);
     }
 
-    public function thenGet()
+    public function thenTransformWith($with)
+    {
+        $with = is_array($with) ? $with : func_get_args();
+
+        return $this->thenTransform($with);
+    }
+
+    public function thenGet($with = null)
     {
         if (! $this->entity) {
             throw new \Exception('No entity to get');
         }
 
+        if ($with) {
+            $with = is_array($with) ? $with : func_get_args();
+            $this->load($with);
+        }
+
         return $this->entity;
+    }
+
+    public function thenGetWith($with = null)
+    {
+        $with = is_array($with) ? $with : func_get_args();
+
+        return $this->thenGet($with);
     }
 
     /**
