@@ -21,19 +21,14 @@ class MbTransformerTest extends TestCase
         $modelData = [
             'foo' => 'Foo',
             'bar' => 'Bar',
-            'baz' => 'Baz',
         ];
 
         $mockModel = (object) $modelData;
-
-        $modelData['bazzle'] = 'Baz';
-        unset($modelData['baz']);
 
         $transformer = new TransformerTest;
         $transformer->setProperties([
             'foo',
             'bar',
-            'baz' => 'bazzle',
         ]);
 
         $transformation = $transformer->transform($mockModel);
@@ -58,6 +53,37 @@ class MbTransformerTest extends TestCase
         $transformation = $transformer->transform($mockModel);
 
         $this->assertEquals($modelData, $transformation);
+    }
+
+    public function test_basic_type_transformation()
+    {
+        $modelData = [
+            'foo' => '1',
+            'bar' => 'false',
+            'baz' => '.5',
+            'fub' => 1
+        ];
+
+        $mockModel = (object) $modelData;
+
+        $modelData['foo'] = 1;
+        $modelData['bar'] = false;
+        $modelData['baz'] = .5;
+        $modelData['fub'] = '1';
+
+        $transformer = new TransformerTest;
+        $transformer->setProperties([
+            'foo' => 'int',
+            'bar' => 'bool',
+            'baz' => 'float',
+            'fub' => 'string',
+        ]);
+
+        $transformation = $transformer->transform($mockModel);
+
+        foreach ($modelData as $key => $value) {
+            $this->assertSame(gettype($value), gettype($transformation[$key]));
+        }
     }
 
     public function test_it_sets_and_creates_relations()

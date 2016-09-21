@@ -4,9 +4,8 @@ namespace MbData;
 
 abstract class AbstractTransformer implements TransformerInterface
 {
-    protected $properties;
-    protected $relations = [];
-    protected $factories = [];
+    protected $properties = [];
+    protected $relations  = [];
 
     public function setProperties($properties)
     {
@@ -38,9 +37,15 @@ abstract class AbstractTransformer implements TransformerInterface
     {
         $array = [];
 
-        foreach ($this->properties as $property => $name) {
-            $property = is_int($property) ? $name : $property;
-            isset($model->$property) && $array[$name] = $model->$property;
+        foreach ($this->properties as $key => $value) {
+            $property = is_int($key) ? $value : $key;
+
+            if (! isset($model->$property)) {
+                continue;
+            }
+
+            $array[$property] = $model->$property;
+            ! is_int($key) && settype($array[$property], $value);
         }
 
         foreach ($this->relations as $relation => $transformer) {

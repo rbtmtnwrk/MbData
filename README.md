@@ -197,7 +197,7 @@ class FooTransformer extends AbstractTransformer
 }
 ```
 
-To specify properties that are direct transformations, ie <code>"property" => $model->property</code>, use the <code>setProperties</code> method:
+To specify properties to be included in the transformation, ie <code>"property" => $model->property</code>, use the <code>setProperties</code> method:
 
 ```
 class FooTransformer extends AbstractTransformer
@@ -208,13 +208,52 @@ class FooTransformer extends AbstractTransformer
     }
 }
 
+. . .
+
 // Which creates these properties in the transformed array:
 
-$fooTransformed = [
+$model = (object) [
+    'id' => 1,
+    'foo' => 'Foo',
+    'bar' => 'Bar',
+];
+
+$transformed = $fooTransformer->transform($model);
+
+$transformed == [
     'id'  => 1,
-    'foo' => 'Baz',
-]
+    'foo' => 'Foo',
+];
 ```
+
+To cast properties to a specific type, set properties with a keyed array <code>property => type</code>:
+
+```
+class FooTransformer extends AbstractTransformer
+{
+    public function __construct()
+    {
+        $this->setProperties([
+            'id' => 'int',
+            'foo', // Skips type transformation
+         ]);
+    }
+}
+
+. . .
+
+$model = (object) [
+    'id' => '1',
+    'foo' => 'Foo',
+];
+
+$transformed = $fooTransformer->transform($model);
+
+// gettype($fooTransformed['id'])  == 'integer';
+// gettype($fooTransformed['foo']) == 'string';
+
+```
+
 
 To create specific transforms, override the <code>build</code> method with the <code>$model</code> as the parameter:
 
@@ -223,7 +262,7 @@ class FooTransformer extends AbstractTransformer
 {
     public function __construct()
     {
-        $this->setProperties(['id', 'foo']);
+        $this->setProperties(['id' => 'int', 'foo']);
     }
 
     public function build($model)
@@ -245,7 +284,7 @@ class FooTransformer extends AbstractTransformer
 {
     public function __construct(\BarTransformer $barTransformer)
     {
-        $this->setProperties(['id', 'foo']);
+        $this->setProperties(['id' => 'int', 'foo']);
         $this->setRelation('bar', $barTransformer);
     }
 
@@ -260,7 +299,7 @@ class FooTransformer extends AbstractTransformer
 {
     public function __construct()
     {
-        $this->setProperties(['id', 'foo']);
+        $this->setProperties(['id' => 'int', 'foo']);
 
         $this->setRelation('bar', function($model) {
             return [
