@@ -50,10 +50,17 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this->transformer;
     }
 
-     public function setTransformer($transformer)
-     {
+    public function setTransformer($transformer)
+    {
         $this->transformer = $transformer;
-     }
+    }
+
+    public function callTransformerMethod($method, $params = [])
+    {
+        call_user_func_array([$this->transformer, $method], $params);
+
+        return $this;
+    }
 
     public function transform()
     {

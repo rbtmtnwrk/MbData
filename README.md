@@ -136,6 +136,8 @@ getTransformer()
 
 setTransformer($transformer)
 
+callTransformerMethod($method, $params = [])
+
 transform()
 
 newQuery()
