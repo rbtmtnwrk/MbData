@@ -121,8 +121,6 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
 
     public function whereNotIn($column, $values, $boolean = 'and')
     {
-        var_dump('goop');
-
         return $this->whereIn($column, $values, $boolean, true);
     }
 
