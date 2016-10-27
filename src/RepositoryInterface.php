@@ -28,7 +28,9 @@ interface RepositoryInterface
 
     public function where($column, $operator = null, $value = null);
 
-    public function whereIn($column, $values);
+    public function whereIn($column, $values, $boolean = 'and', $not = false);
+
+    public function whereNotIn($column, $values, $boolean = 'and');
 
     public function orWhere($column, $operator = null, $value = null);
 

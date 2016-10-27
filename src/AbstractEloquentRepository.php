@@ -112,11 +112,18 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
-    public function whereIn($column, $values)
+    public function whereIn($column, $values, $boolean = 'and', $not = false)
     {
-        $this->whereIns[] = (object) compact('column', 'values');
+        $this->whereIns[] = (object) compact('column', 'values', 'boolean', 'not');
 
         return $this;
+    }
+
+    public function whereNotIn($column, $values, $boolean = 'and')
+    {
+        var_dump('goop');
+
+        return $this->whereIn($column, $values, $boolean, true);
     }
 
     public function orWhere($column, $operator = null, $value = null)
@@ -203,7 +210,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
 
         if (count($this->whereIns)) {
             foreach ($this->whereIns as $whereIn) {
-                $builder = $builder->whereIn($whereIn->column, $whereIn->values);
+                $builder = $builder->whereIn($whereIn->column, $whereIn->values, $whereIn->boolean, $whereIn->not);
             }
         }
 

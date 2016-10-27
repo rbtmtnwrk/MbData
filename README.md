@@ -152,7 +152,9 @@ all($columns = null)
 
 where($column, $operator = null, $value = null)
 
-whereIn($column, $values)
+whereIn($column, $values, $boolean = 'and', $not = false)
+
+whereNotIn($column, $values, $boolean = 'and')
 
 orWhere($column, $operator = null, $value = null)
 
