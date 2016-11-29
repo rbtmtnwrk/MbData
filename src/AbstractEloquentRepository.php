@@ -8,7 +8,9 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     protected $entity;
     protected $transformer;
     protected $columns;
-    protected $transform        = false;
+    protected $transform = false;
+    protected $secure    = false;
+    protected $security;
     protected $wheres           = [];
     protected $whereIns         = [];
     protected $relationalWheres = [];
@@ -55,6 +57,18 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         $this->transformer = $transformer;
     }
 
+    public function setSecurity(\MbData\SecurityServiceInterface $security)
+    {
+        $this->security = $security;
+
+        return $this;
+    }
+
+    public function getWith()
+    {
+        return $this->with;
+    }
+
     public function callTransformerMethod($method, $params = [])
     {
         call_user_func_array([$this->transformer, $method], $params);
@@ -65,6 +79,13 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     public function transform()
     {
         $this->transform = true;
+
+        return $this;
+    }
+
+    public function secure()
+    {
+        $this->secure = true;
 
         return $this;
     }
@@ -234,7 +255,10 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
             return null;
         }
 
-        $transform = $this->transformer instanceof \Closure ? $this->transformer : $this->transformer->closure();
+        /**
+         * Create a closure of the transformer if not already one. If not one, set the security attributes and then get the closure.
+         */
+        $transform = $this->transformer instanceof \Closure ? $this->transformer : $this->transformer->setSecure($this->secure)->setSecurity($this->security)->closure();
 
         if ($transformable instanceof \Traversable) {
             $array = [];

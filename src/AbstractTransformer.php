@@ -6,6 +6,8 @@ abstract class AbstractTransformer implements TransformerInterface
 {
     protected $properties = [];
     protected $relations  = [];
+    protected $secure     = false;
+    protected $security;
 
     public function setProperties($properties)
     {
@@ -17,6 +19,20 @@ abstract class AbstractTransformer implements TransformerInterface
     public function setRelation($name, $transformer)
     {
         $this->relations[$name] = $transformer;
+
+        return $this;
+    }
+
+    public function setSecure($secure = true)
+    {
+        $this->secure = $secure;
+
+        return $this;
+    }
+
+    public function setSecurity($security)
+    {
+        $this->security = $security;
 
         return $this;
     }
@@ -35,6 +51,8 @@ abstract class AbstractTransformer implements TransformerInterface
 
     public function transform($model)
     {
+        $this->secure && $this->security && ($model = $this->security->secureModel($model));
+
         $array = [];
 
         foreach ($this->properties as $key => $value) {
@@ -55,7 +73,7 @@ abstract class AbstractTransformer implements TransformerInterface
 
             $snakeName         = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $relation));
             $array[$snakeName] = [];
-            $transform         = $this->closure($transformer);
+            $transform         = $this->closure($transformer->setSecure($this->secure)->setSecurity($this->security));
 
             // Has many relations.
             if ($model->$relation instanceof \Traversable) {

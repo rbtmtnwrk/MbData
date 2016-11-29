@@ -1,13 +1,10 @@
 <?php
 
-/**
- * @TODO: Add closure tests
- */
+require 'TestIncludes.php';
 
-class TransformerTest extends \MbData\AbstractTransformer
-{
- //
-}
+/**
+ * @TODO: Add closure tests. Refactor original tests for included classes.
+ */
 
 class MbTransformerTest extends TestCase
 {
@@ -115,6 +112,30 @@ class MbTransformerTest extends TestCase
         $transformation = $transformer->transform($mockModel);
 
         $this->assertEquals($modelData, $transformation);
+    }
+
+    public function test_eloquent_security()
+    {
+        $foo = new Foo;
+        $foo->barRelation = new Bar;
+
+        $transformer = new FooTransformer;
+        $transformer->setRelation('barRelation', new BarTransformer)
+            ->setSecure()
+            ->setSecurity(new SecurityService);
+
+        $expectation = [
+            'foo' => 'Foo',
+            'baz' => 'Baz',
+            'bar_relation' => [
+                'far' => 'Far',
+                'faz' =>  'Faz'
+            ],
+        ];
+
+        $transformation = $transformer->transform($foo);
+
+        $this->assertEquals($expectation, $transformation);
     }
 }
 
