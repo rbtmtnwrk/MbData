@@ -63,9 +63,47 @@ abstract class AbstractEloquentSecurityService implements SecurityServiceInterfa
         return $model;
     }
 
-    public function secureData($data)
+    public function secureData($class, array $data)
     {
-        // @TODO: Implement.
+        $permissions = isset($this->permissions[$class]) ? $this->permissions[$class] : null;
+
+        foreach ($data as $key => $value) {
+            if (! $this->secureAttribute($class, $key, $permissions)) {
+                unset($data[$key]);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * The following "can" functions are only an example scaffold of an
+     * implementation for testing and sample purposes only. Override
+     * them to suit your own permissions lookup facilities.
+     */
+
+    private function can($action, $class)
+    {
+        if (! isset($this->permissions[$class]) || ! isset($this->permissions[$class][$action])) {
+            return true;
+        }
+
+        return $this->permissions[$class][$action];
+    }
+
+    public function canCreate($class)
+    {
+        return $this->can('_create', $class);
+    }
+
+    public function canUpdate($class)
+    {
+        return $this->can('_update', $class);
+    }
+
+    public function canDelete($class)
+    {
+        return $this->can('_delete', $class);
     }
 }
 

@@ -42,6 +42,35 @@ class SecurityServiceTest extends TestCase
         // baz not in permission, so pass
         $this->assertEquals(true, isset($foo->baz));
     }
+
+    public function test_secureData()
+    {
+        $service = new SecurityService;
+        $foo     = new Foo;
+        $data    = $foo->getAttributes();
+        $data    = $service->secureData('Foo', $data);
+
+        $expectation = [
+            'foo' => 'Foo',
+            'baz' => 'Baz',
+        ];
+
+        $this->assertEquals($expectation, $data);
+    }
+
+    public function test_create_delete()
+    {
+        $service = new SecurityService;
+
+        $this->assertEquals(true, $service->canCreate('Foo'));
+        $this->assertEquals(true, $service->canUpdate('Foo'));
+        // Permissions does not exist so pass.
+        $this->assertEquals(true, $service->canDelete('Foo'));
+
+        $this->assertEquals(false, $service->canCreate('Bar'));
+        $this->assertEquals(false, $service->canUpdate('Bar'));
+        $this->assertEquals(false, $service->canDelete('Bar'));
+    }
 }
 
 /* End of file */

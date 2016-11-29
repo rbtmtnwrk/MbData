@@ -11,11 +11,16 @@ class SecurityService extends \MbData\AbstractEloquentSecurityService
     {
         $this->permissions = [
             'Foo' => [
-                'foo' => true,
-                'bar' => false,
+                '_create' => true,
+                '_update' => true,
+                'foo'     => true,
+                'bar'     => false,
             ],
             'Bar' => [
-                'boo' => false,
+                '_create' => false,
+                '_update' => false,
+                '_delete' => false,
+                'boo'     => false,
             ]
         ];
     }

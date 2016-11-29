@@ -16,7 +16,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     protected $relationalWheres = [];
     protected $with             = [];
     protected $orderBys         = [];
-    protected $notResettable     = ['model', 'transformer'];
+    protected $notResettable     = ['model', 'transformer', 'security'];
 
     use \MbSupport\ResettableTrait;
 
@@ -273,8 +273,34 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $transform($transformable);
     }
 
+    private function secureAction($type)
+    {
+        if (! $this->secure && ! $this->security) {
+            return true;
+        }
+
+        $class = get_class($this->getModel());
+
+        if (! $this->security->$type($class)) {
+            throw new \Exception('Access denied for ' . $type . ' on model ' . $class);
+        }
+
+        return true;
+    }
+
+    private function secureData($data)
+    {
+        if ($this->secure && $this->security) {
+            $data = $this->security->secureData(get_class($this->getModel()), $data);
+        }
+
+        return $data;
+    }
+
     public function create($data)
     {
+        $this->secureAction('canCreate');
+        $data  = $this->secureData($data);
         $model = $this->getModel()->create($data);
 
         if (! $model) {
@@ -294,6 +320,8 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
      */
     public function save($data, $entity = null)
     {
+        $this->secureAction('canUpdate');
+        $data   = $this->secureData($data);
         $model  = $this->getModel();
         $entity = $entity ?: $this->getBuilder()->first($this->getColumns());
 
@@ -374,6 +402,9 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
      */
     public function update($data)
     {
+        $this->secureAction('canUpdate');
+        $data = $this->secureData($data);
+
         return $this->getBuilder()->update($data);
     }
 
@@ -383,6 +414,8 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
      */
     public function delete()
     {
+        $this->secureAction('canDelete');
+
         return $this->getBuilder()->delete();
     }
 }

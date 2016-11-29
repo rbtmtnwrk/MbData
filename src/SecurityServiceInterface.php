@@ -12,7 +12,13 @@ interface SecurityServiceInterface
 
     public function secureModel($model);
 
-    public function secureData($data);
+    public function secureData($class, array $data);
+
+    public function canCreate($class);
+
+    public function canUpdate($class);
+
+    public function canDelete($class);
 }
 
 /* End of file */
