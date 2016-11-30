@@ -34,7 +34,7 @@ class SecurityService extends \MbData\AbstractEloquentSecurityService
             'Bar' => [
                 'row' => $crudFalse,
                 'column' => [
-                    'boo' => $crudFalse,
+                    'boo' => $crudTrue,
                 ],
             ]
         ];
@@ -52,6 +52,10 @@ class ModelBase
         $array = [];
 
         foreach ($this as $key => $value) {
+            if ($key == 'relation') {
+                continue;
+            }
+
             $array[$key] = $value;
         }
 

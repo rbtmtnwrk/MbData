@@ -29,16 +29,16 @@ abstract class AbstractEloquentSecurityService implements SecurityServiceInterfa
     public function secureAttribute($class, $attribute, $permissions, $action)
     {
         /**
-         * If there are no permissions for this class, just pass it.
+         * If there are no permissions for this class then fail.
          */
         if (! $permissions) {
-            return true;
+            return false;
         }
 
         /**
-         * Also pass if the attribute is not set.
+         * Also fail if the attribute is not set.
          */
-        return isset($permissions['column'][$attribute]) ? $permissions['column'][$attribute][$action] : true;
+        return isset($permissions['column'][$attribute]) ? $permissions['column'][$attribute][$action] : false;
     }
 
     /**

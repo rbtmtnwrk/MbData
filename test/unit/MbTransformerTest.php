@@ -117,21 +117,20 @@ class MbTransformerTest extends TestCase
     public function test_eloquent_security()
     {
         $foo = new Foo;
-        $foo->barRelation = new Bar;
+        $foo->relation = new Bar;
 
         $security = new SecurityService;
 
         $transformer = new FooTransformer;
-        $transformer->setRelation('barRelation', new BarTransformer)
+        $transformer->setRelation('relation', new BarTransformer)
             ->setSecure()
             ->setSecurity($security);
 
         $expectation = [
             'foo' => 'Foo',
             'baz' => 'Baz',
-            'bar_relation' => [
-                'far' => 'Far',
-                'faz' => 'Faz'
+            'relation' => [
+                'boo' => 'Boo',
             ],
         ];
 
