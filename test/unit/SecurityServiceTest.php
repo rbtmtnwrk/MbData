@@ -12,26 +12,27 @@ class SecurityServiceTest extends TestCase
     public function test_secureAttribute()
     {
         $service = new SecurityService;
+
         $fooPermissions = $service->getPermissions()['Foo'];
 
         // foo in permissions and true
-        $this->assertEquals(true, $service->secureAttribute('Foo', 'foo', $fooPermissions));
+        $this->assertEquals(true, $service->secureAttribute('Foo', 'foo', $fooPermissions, 'read'));
 
         // Attribute not in permissions, so pass
-        $this->assertEquals(true, $service->secureAttribute('Foo', 'not_in_permissions', $fooPermissions));
+        $this->assertEquals(true, $service->secureAttribute('Foo', 'not_in_permissions', $fooPermissions, 'read'));
 
         // bar in permissions as a not pass
-        $this->assertEquals(false, $service->secureAttribute('Foo', 'bar', $fooPermissions));
+        $this->assertEquals(false, $service->secureAttribute('Foo', 'bar', $fooPermissions, 'read'));
 
         // Class does not exist in permissions
-        $this->assertEquals(true, $service->secureAttribute('Gleep', 'glop', null));
+        $this->assertEquals(true, $service->secureAttribute('Gleep', 'glop', null, 'read'));
     }
 
     public function test_secureModel()
     {
         $service = new SecurityService;
         $foo = new Foo;
-        $foo = $service->secureModel($foo);
+        $foo = $service->secureModel($foo, 'read');
 
         // foo in permissions and true
         $this->assertEquals(true, isset($foo->foo));
@@ -48,7 +49,7 @@ class SecurityServiceTest extends TestCase
         $service = new SecurityService;
         $foo     = new Foo;
         $data    = $foo->getAttributes();
-        $data    = $service->secureData('Foo', $data);
+        $data    = $service->secureData('Foo', $data, 'read');
 
         $expectation = [
             'foo' => 'Foo',
@@ -62,14 +63,16 @@ class SecurityServiceTest extends TestCase
     {
         $service = new SecurityService;
 
-        $this->assertEquals(true, $service->canCreate('Foo'));
-        $this->assertEquals(true, $service->canUpdate('Foo'));
+        $this->assertEquals(true, $service->can('create', 'Foo'));
+        $this->assertEquals(true, $service->can('read', 'Foo'));
+        $this->assertEquals(true, $service->can('update', 'Foo'));
         // Permissions does not exist so pass.
-        $this->assertEquals(true, $service->canDelete('Foo'));
+        $this->assertEquals(true, $service->can('delete', 'Foo'));
 
-        $this->assertEquals(false, $service->canCreate('Bar'));
-        $this->assertEquals(false, $service->canUpdate('Bar'));
-        $this->assertEquals(false, $service->canDelete('Bar'));
+        $this->assertEquals(false, $service->can('create', 'Bar'));
+        $this->assertEquals(false, $service->can('read', 'Bar'));
+        $this->assertEquals(false, $service->can('update', 'Bar'));
+        $this->assertEquals(false, $service->can('delete', 'Bar'));
     }
 }
 

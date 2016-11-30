@@ -9,18 +9,33 @@ class SecurityService extends \MbData\AbstractEloquentSecurityService
 {
     public function __construct()
     {
+        $crudTrue = [
+            'create' => true,
+            'read'   => true,
+            'update' => true,
+            'delete' => true,
+        ];
+        $crudFalse = [
+            'create' => false,
+            'read'   => false,
+            'update' => false,
+            'delete' => false,
+        ];
+
         $this->permissions = [
             'Foo' => [
-                '_create' => true,
-                '_update' => true,
-                'foo'     => true,
-                'bar'     => false,
+                'row' => $crudTrue,
+                'column' => [
+                    'foo'     => $crudTrue,
+                    'bar'     => $crudFalse,
+                    'baz'     => $crudTrue,
+                ],
             ],
             'Bar' => [
-                '_create' => false,
-                '_update' => false,
-                '_delete' => false,
-                'boo'     => false,
+                'row' => $crudFalse,
+                'column' => [
+                    'boo' => $crudFalse,
+                ],
             ]
         ];
     }

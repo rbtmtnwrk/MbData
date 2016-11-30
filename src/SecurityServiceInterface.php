@@ -8,17 +8,13 @@ interface SecurityServiceInterface
 
     public function setPermissions($permissions);
 
-    public function secureAttribute($class, $attribute, $permissions);
+    public function secureAttribute($class, $attribute, $permissions, $action);
 
-    public function secureModel($model);
+    public function secureModel($model, $action);
 
-    public function secureData($class, array $data);
+    public function secureData($class, array $data, $action);
 
-    public function canCreate($class);
-
-    public function canUpdate($class);
-
-    public function canDelete($class);
+    public function can($action, $class);
 }
 
 /* End of file */

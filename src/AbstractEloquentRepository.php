@@ -273,7 +273,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $transform($transformable);
     }
 
-    private function secureAction($type)
+    private function secureAction($action)
     {
         if (! $this->secure && ! $this->security) {
             return true;
@@ -281,17 +281,17 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
 
         $class = get_class($this->getModel());
 
-        if (! $this->security->$type($class)) {
-            throw new \Exception('Access denied for ' . $type . ' on model ' . $class);
+        if (! $this->security->can($action, $class)) {
+            throw new \Exception('Access denied for ' . $action . ' on model ' . $class);
         }
 
         return true;
     }
 
-    private function secureData($data)
+    private function secureData($data, $action)
     {
         if ($this->secure && $this->security) {
-            $data = $this->security->secureData(get_class($this->getModel()), $data);
+            $data = $this->security->secureData(get_class($this->getModel()), $data, $action);
         }
 
         return $data;
@@ -300,7 +300,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     public function create($data)
     {
         $this->secureAction('canCreate');
-        $data  = $this->secureData($data);
+        $data  = $this->secureData($data, 'create');
         $model = $this->getModel()->create($data);
 
         if (! $model) {
@@ -320,8 +320,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
      */
     public function save($data, $entity = null)
     {
-        $this->secureAction('canUpdate');
-        $data   = $this->secureData($data);
+        $data   = $this->secureData($data, 'update');
         $model  = $this->getModel();
         $entity = $entity ?: $this->getBuilder()->first($this->getColumns());
 
@@ -402,8 +401,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
      */
     public function update($data)
     {
-        $this->secureAction('canUpdate');
-        $data = $this->secureData($data);
+        $data = $this->secureData($data, 'update');
 
         return $this->getBuilder()->update($data);
     }
@@ -414,7 +412,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
      */
     public function delete()
     {
-        $this->secureAction('canDelete');
+        $this->secureAction('delete');
 
         return $this->getBuilder()->delete();
     }

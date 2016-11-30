@@ -51,7 +51,7 @@ abstract class AbstractTransformer implements TransformerInterface
 
     public function transform($model)
     {
-        $this->secure && $this->security && ($model = $this->security->secureModel($model));
+        $this->secure && $this->security && ($model = $this->security->secureModel($model, 'read'));
 
         $array = [];
 

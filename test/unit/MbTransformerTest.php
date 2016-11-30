@@ -119,17 +119,19 @@ class MbTransformerTest extends TestCase
         $foo = new Foo;
         $foo->barRelation = new Bar;
 
+        $security = new SecurityService;
+
         $transformer = new FooTransformer;
         $transformer->setRelation('barRelation', new BarTransformer)
             ->setSecure()
-            ->setSecurity(new SecurityService);
+            ->setSecurity($security);
 
         $expectation = [
             'foo' => 'Foo',
             'baz' => 'Baz',
             'bar_relation' => [
                 'far' => 'Far',
-                'faz' =>  'Faz'
+                'faz' => 'Faz'
             ],
         ];
 
