@@ -13,8 +13,6 @@ interface SecurityServiceInterface
     public function secureModel($model, $action);
 
     public function secureData($class, array $data, $action);
-
-    public function can($action, $class);
 }
 
 /* End of file */

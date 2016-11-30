@@ -75,21 +75,6 @@ abstract class AbstractEloquentSecurityService implements SecurityServiceInterfa
 
         return $data;
     }
-
-    /**
-     * The following can function is only an example scaffold of an
-     * implementation for testing and sample purposes only. Override
-     * them to suit your own permissions lookup facilities.
-     */
-
-    public function can($action, $class)
-    {
-        if (! isset($this->permissions[$class]) || ! isset($this->permissions[$class]['row'])) {
-            return true;
-        }
-
-        return $this->permissions[$class]['row'][$action];
-    }
 }
 
 /* End of file */

@@ -58,22 +58,6 @@ class SecurityServiceTest extends TestCase
 
         $this->assertEquals($expectation, $data);
     }
-
-    public function test_create_delete()
-    {
-        $service = new SecurityService;
-
-        $this->assertEquals(true, $service->can('create', 'Foo'));
-        $this->assertEquals(true, $service->can('read', 'Foo'));
-        $this->assertEquals(true, $service->can('update', 'Foo'));
-        // Permissions does not exist so pass.
-        $this->assertEquals(true, $service->can('delete', 'Foo'));
-
-        $this->assertEquals(false, $service->can('create', 'Bar'));
-        $this->assertEquals(false, $service->can('read', 'Bar'));
-        $this->assertEquals(false, $service->can('update', 'Bar'));
-        $this->assertEquals(false, $service->can('delete', 'Bar'));
-    }
 }
 
 /* End of file */
