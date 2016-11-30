@@ -273,21 +273,6 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $transform($transformable);
     }
 
-    private function secureAction($action)
-    {
-        if (! $this->secure && ! $this->security) {
-            return true;
-        }
-
-        $class = get_class($this->getModel());
-
-        if (! $this->security->can($action, $class)) {
-            throw new \Exception('Access denied for ' . $action . ' on model ' . $class);
-        }
-
-        return true;
-    }
-
     private function secureData($data, $action)
     {
         if ($this->secure && $this->security) {
@@ -299,7 +284,6 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
 
     public function create($data)
     {
-        $this->secureAction('canCreate');
         $data  = $this->secureData($data, 'create');
         $model = $this->getModel()->create($data);
 
@@ -412,8 +396,6 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
      */
     public function delete()
     {
-        $this->secureAction('delete');
-
         return $this->getBuilder()->delete();
     }
 }
