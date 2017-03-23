@@ -138,6 +138,33 @@ class MbTransformerTest extends TestCase
 
         $this->assertEquals($expectation, $transformation);
     }
+
+    public function test_additional_transforms()
+    {
+        $foo = new Foo;
+        $transformer = new FooTransformer;
+        $transformer->addTransform(function($model, &$array) {
+            $array['foo_tastic'] = $model->foo . '-tastic!';
+        });
+
+        $expectation = 'Foo-tastic!';
+        $transformation = $transformer->transform($foo);
+
+        $this->assertEquals($expectation, $transformation['foo_tastic']);
+
+        $bar = new Bar;
+        $transformer = new BarTransformer;
+        $transformer->addTransform(function($model, $array) {
+            $array['boo_tastic'] = $model->boo . '-tastic!';
+
+            return $array;
+        });
+
+        $expectation = 'Boo-tastic!';
+        $transformation = $transformer->transform($bar);
+
+        $this->assertEquals($expectation, $transformation['boo_tastic']);
+    }
 }
 
 /* End of file */

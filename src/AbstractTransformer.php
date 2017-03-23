@@ -6,8 +6,22 @@ abstract class AbstractTransformer implements TransformerInterface
 {
     protected $properties = [];
     protected $relations  = [];
+    protected $transforms = [];
     protected $secure     = false;
     protected $security;
+
+    /**
+     * For adding transforms during runtime. Closure must accept
+     * the model and a reference to the transformed array.
+     * @param \Closure $transform
+     * @return this
+     */
+    public function addTransform(\Closure $transform)
+    {
+        $this->transforms[] = $transform;
+
+        return $this;
+    }
 
     public function setProperties($properties)
     {
@@ -64,6 +78,12 @@ abstract class AbstractTransformer implements TransformerInterface
 
             $array[$property] = $model->$property;
             ! is_int($key) && settype($array[$property], $value);
+        }
+
+        foreach ($this->transforms as $transform) {
+            $result = $transform($model, $array);
+
+            is_array($result) && $array = array_merge($array, $result);
         }
 
         foreach ($this->relations as $relation => $transformer) {
