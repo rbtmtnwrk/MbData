@@ -8,6 +8,7 @@ MbData is a library that contains classes for data storage and transformation. T
     - [then and Relations](#then-and-relations)
     - [Available Methods](#available-methods)
 - [Transformers](#transformers)
+    - [Named and Runtime Transformations](#named-and-runtime-transformations)
     - [Transformer Relations](#transformer-relations)
 
 ## Repositories
@@ -286,6 +287,57 @@ class FooTransformer extends AbstractTransformer
 }
 ```
 
+### Named and Runtime Transformations
+
+To add additional transformations during runtime, use the <code>addTransforms(\Closure transform)</code> method.
+
+Your closure must accept the <code>model</code> and the transformed <code>array</code>:
+
+```
+$foo = new Foo;
+
+$transformer = new FooTransformer;
+
+. . .
+
+// You can pass the array by reference
+$transformer->addTransform(function($model, &$array) {
+    $array['foo_tastic'] = $model->foo . '-tastic!';
+});
+
+// Or return it
+$transformer->addTransform(function($model, $array) {
+    $array['foo_tastic'] = $model->foo . '-tastic!';
+
+    return $array
+});
+
+```
+
+#### Named Transforms
+
+Add a named transform. Useful when you need to check if a transform exists:
+
+```
+$foo = new Foo;
+$transformer = new FooTransformer;
+
+$closure = function($model, &$array) {
+    $array['foo_tastic'] = $model->foo . '-tastic!';
+};
+
+// Add a name to the transform
+$transformer->addTransform($closure, 'footastic');
+
+. . .
+
+// Then you can check for existence
+if (! $transformer->hasTransform('footastic')) {
+    throw new Exception('Footastic transform does not exist');
+}
+
+```
+
 ### Transformer Relations
 
 Create a relation using the setRelation method, specifying the relation name that is in the model, and the transformer to be used. In this example we are injecting the related transformer in the constructor:
@@ -322,31 +374,4 @@ class FooTransformer extends AbstractTransformer
 
     . . .
 }
-```
-
-### Runtime Transformations
-
-To add additional transformations during runtime, use the <code>addTransforms(\Closure transform)</code> method.
-
-Your closure must accept the <code>model</code> and the transformed <code>array</code>:
-
-```
-$foo = new Foo;
-
-$transformer = new FooTransformer;
-
-. . .
-
-// You can pass the array by reference
-$transformer->addTransform(function($model, &$array) {
-    $array['foo_tastic'] = $model->foo . '-tastic!';
-});
-
-// Or return it
-$transformer->addTransform(function($model, $array) {
-    $array['foo_tastic'] = $model->foo . '-tastic!';
-
-    return $array
-});
-
 ```
