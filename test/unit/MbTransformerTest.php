@@ -114,6 +114,17 @@ class MbTransformerTest extends TestCase
         $this->assertEquals($modelData, $transformation);
     }
 
+    public function test_it_gets_relations()
+    {
+        $transformer = new TransformerTest;
+        $foo = (object) ['test' => 1];
+
+        $transformer->setRelation('foo', $foo);
+        $transformer->getRelation('foo')->test = 2;
+
+        $this->assertEquals(2, $transformer->getRelation('foo')->test);
+    }
+
     public function test_eloquent_security()
     {
         $foo = new Foo;
