@@ -232,6 +232,13 @@ $transformed == [
 
 To cast properties to a specific type, set properties with a keyed array <code>property => type</code>:
 
+Types currently supported are:
+
+- int
+- float
+- bool
+- string
+
 ```
 class FooTransformer extends AbstractTransformer
 {
@@ -315,4 +322,31 @@ class FooTransformer extends AbstractTransformer
 
     . . .
 }
+```
+
+### Runtime Transformations
+
+To add additional transformations during runtime, use the <code>addTransforms(\Closure transform)</code> method.
+
+Your closure must accept the <code>model</code> and the transformed <code>array</code>:
+
+```
+$foo = new Foo;
+
+$transformer = new FooTransformer;
+
+. . .
+
+// You can pass the array by reference
+$transformer->addTransform(function($model, &$array) {
+    $array['foo_tastic'] = $model->foo . '-tastic!';
+});
+
+// Or return it
+$transformer->addTransform(function($model, $array) {
+    $array['foo_tastic'] = $model->foo . '-tastic!';
+
+    return $array
+});
+
 ```
