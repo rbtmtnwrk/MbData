@@ -11,16 +11,23 @@ abstract class AbstractTransformer implements TransformerInterface
     protected $security;
 
     /**
-     * For adding transforms during runtime. Closure must accept
-     * the model and a reference to the transformed array.
+     * For adding transforms during runtime. Closure must accept the
+     * model and a reference to the transformed array. Adding a
+     * name useful for checking if an added transform exists.
      * @param \Closure $transform
+     * @param string   $name
      * @return this
      */
-    public function addTransform(\Closure $transform)
+    public function addTransform(\Closure $transform, $name = null)
     {
-        $this->transforms[] = $transform;
+        $name ? $this->transforms[$name] = $transform : $this->transforms[] = $transform;
 
         return $this;
+    }
+
+    public function hasTransform($name)
+    {
+        return isset($this->transforms[$name]);
     }
 
     public function setProperties($properties)

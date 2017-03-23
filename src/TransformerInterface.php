@@ -4,7 +4,9 @@ namespace MbData;
 
 interface TransformerInterface
 {
-    public function addTransform(\Closure $transform);
+    public function addTransform(\Closure $transform, $name = null);
+
+    public function hasTransform($name);
 
     public function setProperties($properties);
 
