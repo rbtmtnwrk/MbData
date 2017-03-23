@@ -37,6 +37,15 @@ abstract class AbstractTransformer implements TransformerInterface
         return $this;
     }
 
+    public function getRelation($name)
+    {
+        if (! isset($this->relations[$name])) {
+            throw new \Exception('No transfromer relation found for ' .  $name);
+        }
+
+        return $this->relations[$name];
+    }
+
     public function setRelation($name, $transformer)
     {
         $this->relations[$name] = $transformer;

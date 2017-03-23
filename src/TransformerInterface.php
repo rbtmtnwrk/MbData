@@ -10,6 +10,8 @@ interface TransformerInterface
 
     public function setProperties($properties);
 
+    public function getRelation($name);
+
     public function setRelation($name, $transformer);
 
     public function setSecure($secure = true);
