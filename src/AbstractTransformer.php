@@ -103,7 +103,7 @@ abstract class AbstractTransformer implements TransformerInterface
         }
 
         foreach ($this->relations as $relation => $transformer) {
-            if (! isset($model->$relation)) {
+            if (! isset($model->getRelations()[$relation])) {
                 continue;
             }
 
