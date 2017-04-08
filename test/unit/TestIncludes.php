@@ -27,14 +27,14 @@ class SecurityService extends \MbData\AbstractEloquentSecurityService
                 'row' => $crudTrue,
                 'column' => [
                     'foo'     => $crudTrue,
-                    'bar'     => $crudFalse,
-                    'baz'     => $crudTrue,
+                    'far'     => $crudFalse,
+                    'faz'     => $crudTrue,
                 ],
             ],
             'Bar' => [
                 'row' => $crudFalse,
                 'column' => [
-                    'boo' => $crudTrue,
+                    'bar' => $crudTrue,
                 ],
             ]
         ];
@@ -43,6 +43,7 @@ class SecurityService extends \MbData\AbstractEloquentSecurityService
 
 class ModelBase
 {
+    public $relations = [];
     /**
      * Simulate the getAttributes() method.
      * @return array
@@ -56,25 +57,43 @@ class ModelBase
                 continue;
             }
 
+            if ($key == 'relations') {
+                continue;
+            }
+
             $array[$key] = $value;
         }
 
         return $array;
+    }
+
+    /**
+     * Simulate relations methods
+     */
+    public function getRelations()
+    {
+        return $this->relations;
+    }
+
+    public function setRelation($name, $mixed)
+    {
+        $this->relations[$name] = true;
+        $this->$name = $mixed;
     }
 }
 
 class Foo extends ModelBase
 {
     public $foo = 'Foo';
-    public $bar = 'Bar';
-    public $baz = 'Baz';
+    public $far = 'Far';
+    public $faz = 'Faz';
 }
 
 class Bar extends ModelBase
 {
+    public $bar = 'Bar';
+    public $baz = 'Baz';
     public $boo = 'Boo';
-    public $far = 'Far';
-    public $faz = 'Faz';
 }
 
 class FooTransformer extends \MbData\AbstractTransformer
@@ -83,8 +102,8 @@ class FooTransformer extends \MbData\AbstractTransformer
     {
         $this->setProperties([
             'foo',
-            'bar',
-            'baz',
+            'far',
+            'faz',
         ]);
     }
 }
@@ -94,9 +113,9 @@ class BarTransformer extends \MbData\AbstractTransformer
     public function __construct()
     {
         $this->setProperties([
+            'bar',
+            'baz',
             'boo',
-            'far',
-            'faz',
         ]);
     }
 }

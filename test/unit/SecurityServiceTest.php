@@ -22,7 +22,7 @@ class SecurityServiceTest extends TestCase
         $this->assertEquals(false, $service->secureAttribute('Foo', 'not_in_permissions', $fooPermissions, 'read'));
 
         // bar in permissions as a not pass
-        $this->assertEquals(false, $service->secureAttribute('Foo', 'bar', $fooPermissions, 'read'));
+        $this->assertEquals(false, $service->secureAttribute('Foo', 'far', $fooPermissions, 'read'));
 
         // Class does not exist in permissions
         $this->assertEquals(false, $service->secureAttribute('Gleep', 'glop', null, 'read'));
@@ -38,10 +38,10 @@ class SecurityServiceTest extends TestCase
         $this->assertEquals(true, isset($foo->foo));
 
         // bar in permissions as a not pass
-        $this->assertEquals(false, isset($foo->bar));
+        $this->assertEquals(false, isset($foo->far));
 
         // baz not in permission, fail
-        $this->assertEquals(true, isset($foo->baz));
+        $this->assertEquals(true, isset($foo->faz));
     }
 
     public function test_secureData()
@@ -53,7 +53,7 @@ class SecurityServiceTest extends TestCase
 
         $expectation = [
             'foo' => 'Foo',
-            'baz' => 'Baz',
+            'faz' => 'Faz',
         ];
 
         $this->assertEquals($expectation, $data);
