@@ -11,14 +11,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     protected $transform = false;
     protected $secure    = false;
     protected $security;
-    protected $wheres           = [];
-    protected $whereIns         = [];
-    protected $relationalWheres = [];
-    protected $with             = [];
-    protected $orderBys         = [];
-    protected $joins            = [];
-
-    protected $calls = [];
+    protected $calls     = [];
 
     protected $notResettable    = ['model', 'transformer', 'security'];
 
