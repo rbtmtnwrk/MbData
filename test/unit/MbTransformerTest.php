@@ -15,103 +15,103 @@ class MbTransformerTest extends TestCase
 
     public function test_it_sets_params_and_returns_an_array()
     {
-        $modelData = [
-            'foo' => 'Foo',
-            'bar' => 'Bar',
-        ];
-
-        $mockModel = (object) $modelData;
+        $foo = new Foo;
 
         $transformer = new TransformerTest;
         $transformer->setProperties([
             'foo',
-            'bar',
+            'far',
+            'faz',
         ]);
 
-        $transformation = $transformer->transform($mockModel);
+        $transformation = $transformer->transform($foo);
 
-        $this->assertEquals($modelData, $transformation);
+        foreach ($foo->getAttributes() as $key => $value) {
+            $this->assertEquals($value, $transformation[$key]);
+        }
     }
 
     public function test_it_builds_only_existing_properties()
     {
-        $modelData = [
-            'foo' => 'Foo',
-        ];
-
-        $mockModel = (object) $modelData;
+        $foo = new Foo;
+        unset($foo->far);
 
         $transformer = new TransformerTest;
         $transformer->setProperties([
             'foo',
-            'bar',
+            'far',
         ]);
 
-        $transformation = $transformer->transform($mockModel);
+        $transformation = $transformer->transform($foo);
 
-        $this->assertEquals($modelData, $transformation);
+        $this->assertEquals(true, isset($transformation['foo']));
+        $this->assertEquals(false, isset($transformation['far']));
+        $this->assertEquals(false, isset($transformation['faz']));
     }
 
     public function test_basic_type_transformation()
     {
-        $modelData = [
-            'foo' => '1',
-            'bar' => 'false',
-            'baz' => '.5',
-            'fub' => 1
+        $foo = new Foo;
+        $foo->foo = '1';
+        $foo->far = 'false';
+        $foo->faz = '.5';
+        $foo->fo  = 1;
+
+        $expectations = [
+            'foo' => 1,
+            'far' => false,
+            'faz' => .5,
+            'fo'  => '1',
         ];
-
-        $mockModel = (object) $modelData;
-
-        $modelData['foo'] = 1;
-        $modelData['bar'] = false;
-        $modelData['baz'] = .5;
-        $modelData['fub'] = '1';
 
         $transformer = new TransformerTest;
         $transformer->setProperties([
             'foo' => 'int',
-            'bar' => 'bool',
-            'baz' => 'float',
-            'fub' => 'string',
+            'far' => 'bool',
+            'faz' => 'float',
+            'fo'  => 'string',
         ]);
 
-        $transformation = $transformer->transform($mockModel);
+        $transformation = $transformer->transform($foo);
 
-        foreach ($modelData as $key => $value) {
-            $this->assertSame(gettype($value), gettype($transformation[$key]));
+        // var_dump(print_r([
+        //     'file'           => __FILE__ . ' line ' . __LINE__,
+        //     'foo'            => $foo,
+        //     'expectations'   => $expectations,
+        //     'transformation' => $transformation,
+        // ], true));
+
+        foreach ($expectations as $key => $value) {
+            $this->assertSame($value, $transformation[$key]);
         }
     }
 
     public function test_it_sets_and_creates_relations()
     {
-        $modelData = [
-            'foo'     => 'Foo',
-            'bar'     => 'Bar',
-            'burgers' => [[
-                'bun'     => 1,
-                'pickles' => 0,
-            ]]
-        ];
+        $foo  = new Foo;
+        $bar  = new Bar;
+        $bars = new \ArrayIterator([$bar]);
 
-        $mockModel          = (object) $modelData;
-        $mockModel->burgers = new \ArrayIterator([(object) $modelData['burgers'][0]]);
+        $foo->setRelation('bars', $bars);
 
-        $bugerTransformer = new TransformerTest;
-        $bugerTransformer->setProperties([
-            'bun',
-            'pickles',
-        ]);
+        $barTransformer = new TransformerTest;
+        $barTransformer->setProperties(['bar', 'baz', 'boo']);
 
         $transformer = new TransformerTest;
-        $transformer->setProperties([
-            'foo',
-            'bar',
-        ])->setRelation('burgers', $bugerTransformer);
+        $transformer->setProperties(['foo', 'far', 'faz'])->setRelation('bars', $barTransformer);
 
-        $transformation = $transformer->transform($mockModel);
+        $transformation = $transformer->transform($foo);
 
-        $this->assertEquals($modelData, $transformation);
+        $this->assertEquals($foo->foo, $transformation['foo']);
+        $this->assertEquals($foo->far, $transformation['far']);
+        $this->assertEquals($foo->faz, $transformation['faz']);
+
+        $this->assertEquals(true, isset($transformation['bars']));
+        $this->assertEquals(true, count($transformation['bars']) > 0);
+
+        $this->assertEquals($foo->bars[0]->bar, $transformation['bars'][0]['bar']);
+        $this->assertEquals($foo->bars[0]->baz, $transformation['bars'][0]['baz']);
+        $this->assertEquals($foo->bars[0]->boo, $transformation['bars'][0]['boo']);
     }
 
     public function test_it_gets_relations()
@@ -128,26 +128,35 @@ class MbTransformerTest extends TestCase
     public function test_eloquent_security()
     {
         $foo = new Foo;
-        $foo->relation = new Bar;
+        $foo->setRelation('bar', new Bar);
 
-        $security = new SecurityService;
+        // var_dump(print_r([
+        //     'file' => __FILE__ . ' line ' . __LINE__,
+        //     'foo' => $foo,
+        // ], true));
 
+        $security    = new SecurityService;
         $transformer = new FooTransformer;
-        $transformer->setRelation('relation', new BarTransformer)
-            ->setSecure()
-            ->setSecurity($security);
+        $transformer->setRelation('bar', new BarTransformer)->setSecure()->setSecurity($security);
 
         $expectation = [
             'foo' => 'Foo',
-            'baz' => 'Baz',
-            'relation' => [
-                'boo' => 'Boo',
+            'faz' => 'Faz',
+            'bar' => [
+                'bar' => 'Bar',
             ],
         ];
 
         $transformation = $transformer->transform($foo);
 
-        $this->assertEquals($expectation, $transformation);
+        // var_dump(print_r([
+        //     'file' => __FILE__ . ' line ' . __LINE__,
+        //     'foo' => $foo,
+        //     'expectation' => $expectation,
+        //     'transformation' => $transformation,
+        // ], true));
+
+        $this->assertSame($expectation, $transformation);
     }
 
     public function test_additional_transforms()
