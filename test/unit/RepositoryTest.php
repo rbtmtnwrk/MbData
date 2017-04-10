@@ -1,6 +1,6 @@
 <?php
 
-class TransformerTest extends \MbData\AbstractTransformer
+class TransformerDummy extends \MbData\AbstractTransformer
 {
     private $foo;
 
@@ -17,12 +17,12 @@ class TransformerTest extends \MbData\AbstractTransformer
     }
 }
 
-class RepositoryTest extends \MbData\AbstractEloquentRepository
+class RepositoryDummy extends \MbData\AbstractEloquentRepository
 {
     //
 }
 
-class MbRepositoryTest extends TestCase
+class RepositoryTest extends TestCase
 {
     public function setUp()
     {
@@ -31,8 +31,8 @@ class MbRepositoryTest extends TestCase
 
     public function test_call_transformer_method()
     {
-        $repository = new RepositoryTest;
-        $repository->setTransformer(new TransFormerTest);
+        $repository = new RepositoryDummy;
+        $repository->setTransformer(new TransformerDummy);
         $foo = 'Foo!';
 
         $repository->callTransformerMethod('setFoo', [$foo]);
