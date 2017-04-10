@@ -53,11 +53,10 @@ class ModelBase
         $array = [];
 
         foreach ($this as $key => $value) {
-            if ($key == 'relation') {
-                continue;
-            }
-
-            if ($key == 'relations') {
+            /**
+             * Skip the relations array or any property that is a relation.
+             */
+            if ($key == 'relations' || isset($this->getRelations()[$key])) {
                 continue;
             }
 
