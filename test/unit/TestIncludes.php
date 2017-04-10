@@ -1,6 +1,6 @@
 <?php
 
-class TransformerTest extends \MbData\AbstractTransformer
+class TransformerDummy extends \MbData\AbstractTransformer
 {
  //
 }

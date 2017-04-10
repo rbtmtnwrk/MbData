@@ -6,7 +6,7 @@ require 'TestIncludes.php';
  * @TODO: Add closure tests. Refactor original tests for included classes.
  */
 
-class MbTransformerTest extends TestCase
+class TransformerTest extends TestCase
 {
     public function setUp()
     {
@@ -17,7 +17,7 @@ class MbTransformerTest extends TestCase
     {
         $foo = new Foo;
 
-        $transformer = new TransformerTest;
+        $transformer = new TransformerDummy;
         $transformer->setProperties([
             'foo',
             'far',
@@ -36,7 +36,7 @@ class MbTransformerTest extends TestCase
         $foo = new Foo;
         unset($foo->far);
 
-        $transformer = new TransformerTest;
+        $transformer = new TransformerDummy;
         $transformer->setProperties([
             'foo',
             'far',
@@ -64,7 +64,7 @@ class MbTransformerTest extends TestCase
             'fo'  => '1',
         ];
 
-        $transformer = new TransformerTest;
+        $transformer = new TransformerDummy;
         $transformer->setProperties([
             'foo' => 'int',
             'far' => 'bool',
@@ -94,10 +94,10 @@ class MbTransformerTest extends TestCase
 
         $foo->setRelation('bars', $bars);
 
-        $barTransformer = new TransformerTest;
+        $barTransformer = new TransformerDummy;
         $barTransformer->setProperties(['bar', 'baz', 'boo']);
 
-        $transformer = new TransformerTest;
+        $transformer = new TransformerDummy;
         $transformer->setProperties(['foo', 'far', 'faz'])->setRelation('bars', $barTransformer);
 
         $transformation = $transformer->transform($foo);
@@ -116,7 +116,7 @@ class MbTransformerTest extends TestCase
 
     public function test_it_gets_relations()
     {
-        $transformer = new TransformerTest;
+        $transformer = new TransformerDummy;
         $foo = (object) ['test' => 1];
 
         $transformer->setRelation('foo', $foo);
