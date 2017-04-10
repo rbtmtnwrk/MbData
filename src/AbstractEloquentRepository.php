@@ -61,9 +61,9 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
-    public function getWith()
+    public function getCalls()
     {
-        return $this->with;
+        return $this->calls;
     }
 
     public function callTransformerMethod($method, $params = [])
@@ -203,6 +203,31 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         $this->addCall('join', func_get_args());
 
         return $this;
+    }
+
+    public function joinWhere($table, $one, $operator, $two, $type = 'inner')
+    {
+        return $this->join($table, $one, $operator, $two, $type, true);
+    }
+
+    public function leftJoin($table, $one, $operator = null, $two = null)
+    {
+        return $this->join($table, $one, $operator, $two, 'left');
+    }
+
+    public function leftJoinWhere($table, $one, $operator, $two)
+    {
+        return $this->joinWhere($table, $one, $operator, $two, 'left');
+    }
+
+    public function rightJoin($table, $one, $operator = null, $two = null)
+    {
+        return $this->join($table, $one, $operator, $two, 'right');
+    }
+
+    public function rightJoinWhere($table, $one, $operator, $two)
+    {
+        return $this->joinWhere($table, $one, $operator, $two, 'right');
     }
 
     public function skip($value)

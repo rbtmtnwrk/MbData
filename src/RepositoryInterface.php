@@ -44,6 +44,16 @@ interface RepositoryInterface
 
     public function join($table, $one, $operator = null, $two = null, $type = 'inner', $where = false);
 
+    public function joinWhere($table, $one, $operator, $two, $type = 'inner');
+
+    public function leftJoin($table, $first, $operator = null, $second = null);
+
+    public function leftJoinWhere($table, $one, $operator, $two);
+
+    public function rightJoin($table, $first, $operator = null, $second = null);
+
+    public function rightJoinWhere($table, $one, $operator, $two);
+
     public function skip($value);
 
     public function take($value);
