@@ -83,6 +83,27 @@ abstract class AbstractTransformer implements TransformerInterface
     {
         $this->secure && $this->security && ($model = $this->security->secureModel($model, 'read'));
 
+        $convert = [
+            'bool' => function($mixed) {
+                if ($mixed == 'true') {
+                    return true;
+                }
+                return false;
+            },
+            'string' => function($mixed) {
+                settype($mixed, 'string');
+                return $mixed;
+            },
+            'int' => function($mixed) {
+                settype($mixed, 'int');
+                return $mixed;
+            },
+            'float' => function($mixed) {
+                settype($mixed, 'float');
+                return $mixed;
+            }
+        ];
+
         $array = [];
 
         foreach ($this->properties as $key => $value) {
@@ -92,8 +113,7 @@ abstract class AbstractTransformer implements TransformerInterface
                 continue;
             }
 
-            $array[$property] = $model->$property;
-            ! is_int($key) && settype($array[$property], $value);
+            $array[$property] = is_int($key) ? $model->$property : $convert[$value]($model->$property);
         }
 
         foreach ($this->transforms as $transform) {
