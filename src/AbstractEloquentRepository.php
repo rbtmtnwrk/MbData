@@ -16,7 +16,11 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     protected $relationalWheres = [];
     protected $with             = [];
     protected $orderBys         = [];
-    protected $notResettable     = ['model', 'transformer', 'security'];
+    protected $joins            = [];
+
+    protected $calls = [];
+
+    protected $notResettable    = ['model', 'transformer', 'security'];
 
     use \MbSupport\ResettableTrait;
 
@@ -125,71 +129,99 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this->transform ? $this->doTransformation($this->entity) : $this->entity;
     }
 
+    private function addCall($name, $params)
+    {
+        (! isset($this->calls[$name])) && $this->calls[$name] = [];
+
+        $this->calls[$name][] = $params;
+    }
+
     public function where($column, $operator = null, $value = null)
     {
-        $boolean        = 'and';
-        $this->wheres[] = (object) compact('column', 'operator', 'value', 'boolean');
+        $params = func_get_args();
+        $params['boolean'] = 'and';
+
+        $this->addCall('where', $params);
 
         return $this;
     }
 
     public function whereIn($column, $values, $boolean = 'and', $not = false)
     {
-        $this->whereIns[] = (object) compact('column', 'values', 'boolean', 'not');
+        $this->addCall('whereIn', func_get_args());
 
         return $this;
     }
 
     public function whereNotIn($column, $values, $boolean = 'and')
     {
-        return $this->whereIn($column, $values, $boolean, true);
+        $this->addCall('whereNotIn', func_get_args());
+
+        return $this;
     }
 
     public function orWhere($column, $operator = null, $value = null)
     {
-        $boolean        = 'or';
-        $this->wheres[] = (object) compact('column', 'operator', 'value', 'boolean');
+        $params = func_get_args();
+        $params['boolean'] = 'or';
+
+        $this->addCall('orWhere', $params);
 
         return $this;
     }
 
     public function whereHas($relation, \Closure $callback)
     {
-        $args = compact('relation', 'callback');
-        $args['type'] = 'whereHas';
-        $this->relationalWheres[] = (object) $args;
+        $this->addCall('whereHas', func_get_args());
 
         return $this;
     }
 
     public function whereDoesntHave($relation, \Closure $callback = null)
     {
-        $args = compact('relation', 'callback');
-        $args['type'] = 'whereDoesntHave';
-        $this->relationalWheres[] = (object) $args;
+        $this->addCall('whereDoesntHave', func_get_args());
 
         return $this;
     }
 
     public function orWhereHas($relation, \Closure $callback)
     {
-        $args = compact('relation', 'callback');
-        $args['type'] = 'orWhereHas';
-        $this->relationalWheres[] = (object) $args;
+        $this->addCall('orWhereHas', func_get_args());
 
         return $this;
     }
 
     public function orderBy($column, $direction = 'asc')
     {
-        $this->orderBys[] = (object) compact('column', 'direction');
+        $this->addCall('orderBy', func_get_args());
 
         return $this;
     }
 
     public function with($with)
     {
-        $this->with[] = is_array($with) ? $with : func_get_args();
+        $this->addCall('with', func_get_args());
+
+        return $this;
+    }
+
+    public function join($table, $one, $operator = null, $two = null, $type = 'inner', $where = false)
+    {
+        $this->addCall('join', func_get_args());
+
+        return $this;
+    }
+
+    public function skip($value)
+    {
+        $this->addCall('skip', func_get_args());
+
+        return $this;
+    }
+
+    public function take($value)
+    {
+        $this->addCall('take', func_get_args());
 
         return $this;
     }
@@ -215,33 +247,9 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     {
         $builder = $this->getModel();
 
-        if (count($this->with)) {
-            foreach ($this->with as $with) {
-                $builder = $builder->with($with);
-            }
-        }
-
-        if (count($this->wheres)) {
-            foreach ($this->wheres as $where) {
-                $builder = $builder->where($where->column, $where->operator, $where->value, $where->boolean);
-            }
-        }
-
-        if (count($this->whereIns)) {
-            foreach ($this->whereIns as $whereIn) {
-                $builder = $builder->whereIn($whereIn->column, $whereIn->values, $whereIn->boolean, $whereIn->not);
-            }
-        }
-
-        if (count($this->relationalWheres)) {
-            foreach ($this->relationalWheres as $where) {
-                $builder = $builder->{$where->type}($where->relation, $where->callback);
-            }
-        }
-
-        if (count($this->orderBys)) {
-            foreach ($this->orderBys as $orderBy) {
-                $builder = $builder->orderBy($orderBy->column, $orderBy->direction);
+        foreach ($this->calls as $name => $call) {
+            foreach ($call as $params) {
+                $builder = call_user_func_array([$builder, $name], $params);
             }
         }
 

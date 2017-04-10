@@ -42,6 +42,12 @@ interface RepositoryInterface
 
     public function orderBy($column, $direction = 'asc');
 
+    public function join($table, $one, $operator = null, $two = null, $type = 'inner', $where = false);
+
+    public function skip($value);
+
+    public function take($value);
+
     public function with($with);
 
     public function load($relations);
