@@ -8,6 +8,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     protected $entity;
     protected $transformer;
     protected $columns;
+    protected $index     = false;
     protected $transform = false;
     protected $secure    = false;
     protected $security;
@@ -73,6 +74,13 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
+    public function index()
+    {
+        $this->index = true;
+
+        return $this;
+    }
+
     public function transform()
     {
         $this->transform = true;
@@ -119,7 +127,22 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         $columns      = $this->getColumns($columns);
         $this->entity = $this->getBuilder()->get($columns);
 
-        return $this->transform ? $this->doTransformation($this->entity) : $this->entity;
+        return $this->transform ? $this->doTransformation($this->entity) : $this->returnAll($this->entity);
+    }
+
+    private function returnAll($entity)
+    {
+        if (! $this->index) {
+            return $entity;
+        }
+
+        $array = [];
+
+        foreach ($entity as $item) {
+            $array[$item->id] = $item;
+        }
+
+        return $array;
     }
 
     private function addCall($name, $params)
@@ -290,7 +313,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
             $array = [];
 
             foreach ($transformable as $model) {
-                $array[] = $transform($model);
+                $this->index ? $array[$model->id] = $transform($model) : $array[] = $transform($model);
             }
 
             return $array;

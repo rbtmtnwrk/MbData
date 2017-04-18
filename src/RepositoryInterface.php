@@ -14,6 +14,8 @@ interface RepositoryInterface
 
     public function callTransformerMethod($method, $params = []);
 
+    public function index();
+
     public function transform();
 
     public function newQuery();
