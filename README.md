@@ -123,81 +123,81 @@ $newFoo = $FooRepository->newQuery()
 ## Available Methods
 
 ```
-setColumns($columns);
+setColumns($columns)
 
-getColumns();
+getColumns()
 
-getTransformer();
+getTransformer()
 
-setTransformer($transformer);
+setTransformer($transformer)
 
-callTransformerMethod($method, $params = []);
+callTransformerMethod($method, $params = [])
 
-index();
+index()
 
-transform();
+transform()
 
-newQuery();
+newQuery()
 
-find($id, $columns = null);
+find($id, $columns = null)
 
-first($columns = null);
+first($columns = null)
 
-get($columns = null);
+get($columns = null)
 
-all($columns = null);
+all($columns = null)
 
-where($column, $operator = null, $value = null);
+where($column, $operator = null, $value = null)
 
-whereIn($column, $values, $boolean = 'and', $not = false);
+whereIn($column, $values, $boolean = 'and', $not = false)
 
-whereNotIn($column, $values, $boolean = 'and');
+whereNotIn($column, $values, $boolean = 'and')
 
-orWhere($column, $operator = null, $value = null);
+orWhere($column, $operator = null, $value = null)
 
-whereHas($relation, \Closure $callback);
+whereHas($relation, \Closure $callback)
 
-whereDoesntHave($relation, \Closure $callback = null);
+whereDoesntHave($relation, \Closure $callback = null)
 
-orWhereHas($relation, \Closure $callback);
+orWhereHas($relation, \Closure $callback)
 
-orderBy($column, $direction = 'asc');
+orderBy($column, $direction = 'asc')
 
-join($table, $one, $operator = null, $two = null, $type = 'inner', $where = false);
+join($table, $one, $operator = null, $two = null, $type = 'inner', $where = false)
 
-joinWhere($table, $one, $operator, $two, $type = 'inner');
+joinWhere($table, $one, $operator, $two, $type = 'inner')
 
-leftJoin($table, $first, $operator = null, $second = null);
+leftJoin($table, $first, $operator = null, $second = null)
 
-leftJoinWhere($table, $one, $operator, $two);
+leftJoinWhere($table, $one, $operator, $two)
 
-rightJoin($table, $first, $operator = null, $second = null);
+rightJoin($table, $first, $operator = null, $second = null)
 
-rightJoinWhere($table, $one, $operator, $two);
+rightJoinWhere($table, $one, $operator, $two)
 
-skip($value);
+skip($value)
 
-take($value);
+take($value)
 
-with($with);
+with($with)
 
-load($relations);
+load($relations)
 
-create($data);
+create($data)
 
-save($data);
+save($data)
 
-thenTransform($with = null);
+thenTransform($with = null)
 
-thenTransformWith($with);
+thenTransformWith($with)
 
-thenGet($with = null);
+thenGet($with = null)
 
-thenGetWith($with);
+thenGetWith($with)
 
-update($data);
+update($data)
 
-delete();
+delete()
 ```
 
 ## Transformers
