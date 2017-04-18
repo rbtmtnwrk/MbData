@@ -122,73 +122,82 @@ $newFoo = $FooRepository->newQuery()
 
 ## Available Methods
 
-The goal is to implement all or most of the methods available in the Eloquent builder, but for now these are currently available:
-
 ```
-getColumns($columns = null)
+setColumns($columns);
 
-setColumns($columns)
+getColumns();
 
-getModel()
+getTransformer();
 
-setModel($model)
+setTransformer($transformer);
 
-getTransformer()
+callTransformerMethod($method, $params = []);
 
-setTransformer($transformer)
+index();
 
-callTransformerMethod($method, $params = [])
+transform();
 
-transform()
+newQuery();
 
-newQuery()
+find($id, $columns = null);
 
-find($id, $columns = null)
+first($columns = null);
 
-first($columns = null)
+get($columns = null);
 
-get($columns = null)
+all($columns = null);
 
-all($columns = null)
+where($column, $operator = null, $value = null);
 
-where($column, $operator = null, $value = null)
+whereIn($column, $values, $boolean = 'and', $not = false);
 
-whereIn($column, $values, $boolean = 'and', $not = false)
+whereNotIn($column, $values, $boolean = 'and');
 
-whereNotIn($column, $values, $boolean = 'and')
+orWhere($column, $operator = null, $value = null);
 
-orWhere($column, $operator = null, $value = null)
+whereHas($relation, \Closure $callback);
 
-whereHas($relation, \Closure $callback)
+whereDoesntHave($relation, \Closure $callback = null);
 
-whereDoesntHave($relation, \Closure $callback = null)
+orWhereHas($relation, \Closure $callback);
 
-orWhereHas($relation, \Closure $callback)
+orderBy($column, $direction = 'asc');
 
-orderBy($column, $direction = 'asc')
+join($table, $one, $operator = null, $two = null, $type = 'inner', $where = false);
 
-with($with)
+joinWhere($table, $one, $operator, $two, $type = 'inner');
 
-load($relations)
+leftJoin($table, $first, $operator = null, $second = null);
 
-getBuilder()
+leftJoinWhere($table, $one, $operator, $two);
 
-create($data)
+rightJoin($table, $first, $operator = null, $second = null);
 
-save($data, $entity = null)
+rightJoinWhere($table, $one, $operator, $two);
 
-thenTransform()
+skip($value);
 
-thenTransformWith($with)
+take($value);
 
-thenGet()
+with($with);
 
-thenGetWith($with)
+load($relations);
 
-update($data)
+create($data);
 
-delete()
+save($data);
 
+thenTransform($with = null);
+
+thenTransformWith($with);
+
+thenGet($with = null);
+
+thenGetWith($with);
+
+update($data);
+
+delete();
 ```
 
 ## Transformers
