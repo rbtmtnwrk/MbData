@@ -44,6 +44,8 @@ interface RepositoryInterface
 
     public function orderBy($column, $direction = 'asc');
 
+    public function groupBy();
+
     public function join($table, $one, $operator = null, $two = null, $type = 'inner', $where = false);
 
     public function joinWhere($table, $one, $operator, $two, $type = 'inner');
