@@ -214,6 +214,13 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
+    public function groupBy()
+    {
+        $this->addCall('groupBy', func_get_args());
+
+        return $this;
+    }
+
     public function with($with)
     {
         $this->addCall('with', func_get_args());
