@@ -74,9 +74,9 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
-    public function index()
+    public function index($index = true)
     {
-        $this->index = true;
+        $this->index = $index === true ? 'id' : $index;
 
         return $this;
     }
@@ -139,7 +139,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         $array = [];
 
         foreach ($entity as $item) {
-            $array[$item->id] = $item;
+            $array[$item->{$this->index}] = $item;
         }
 
         return $array;
@@ -320,7 +320,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
             $array = [];
 
             foreach ($transformable as $model) {
-                $this->index ? $array[$model->id] = $transform($model) : $array[] = $transform($model);
+                $this->index ? $array[$model->{$this->index}] = $transform($model) : $array[] = $transform($model);
             }
 
             return $array;
