@@ -228,6 +228,17 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
+    /**
+     * Include soft delete records
+     * @return $builder
+     */
+    public function withTrashed()
+    {
+        $this->addCall('withTrashed', []);
+
+        return $this;
+    }
+
     public function join($table, $one, $operator = null, $two = null, $type = 'inner', $where = false)
     {
         $this->addCall('join', func_get_args());
@@ -462,15 +473,6 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     public function restore()
     {
         return $this->getBuilder()->restore();
-    }
-
-    /**
-     * Include soft delete records
-     * @return $builder
-     */
-    public function withTrashed()
-    {
-        return $this->getBuilder()->withTrashed();
     }
 }
 
