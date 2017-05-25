@@ -81,6 +81,10 @@ interface RepositoryInterface
     public function update($data);
 
     public function delete();
+
+    public function restore();
+
+    public function withTrashed();
 }
 
 /* End of file */

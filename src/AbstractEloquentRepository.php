@@ -454,6 +454,24 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     {
         return $this->getBuilder()->delete();
     }
+
+    /**
+     * Perform a soft delete restore.
+     * @return bool
+     */
+    public function restore()
+    {
+        return $this->getBuilder()->restore();
+    }
+
+    /**
+     * Include soft delete records
+     * @return $builder
+     */
+    public function withTrashed()
+    {
+        return $this->getBuilder()->withTrashed();
+    }
 }
 
 /* End of file */
