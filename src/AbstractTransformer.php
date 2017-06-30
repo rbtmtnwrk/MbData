@@ -10,6 +10,34 @@ abstract class AbstractTransformer implements TransformerInterface
     protected $secure     = false;
     protected $security;
 
+    private $conversions;
+
+    private function getConversions()
+    {
+        (! $this->conversions) && ($this->conversions = [
+            'bool' => function($mixed) {
+                if ($mixed == 'true') {
+                    return true;
+                }
+                return false;
+            },
+            'string' => function($mixed) {
+                settype($mixed, 'string');
+                return $mixed;
+            },
+            'int' => function($mixed) {
+                settype($mixed, 'int');
+                return $mixed;
+            },
+            'float' => function($mixed) {
+                settype($mixed, 'float');
+                return $mixed;
+            }
+        ]);
+
+        return $this->conversions;
+    }
+
     /**
      * For adding transforms during runtime. Closure must accept the
      * model and a reference to the transformed array. Adding a
@@ -83,28 +111,8 @@ abstract class AbstractTransformer implements TransformerInterface
     {
         $this->secure && $this->security && ($model = $this->security->secureModel($model, 'read'));
 
-        $convert = [
-            'bool' => function($mixed) {
-                if ($mixed == 'true') {
-                    return true;
-                }
-                return false;
-            },
-            'string' => function($mixed) {
-                settype($mixed, 'string');
-                return $mixed;
-            },
-            'int' => function($mixed) {
-                settype($mixed, 'int');
-                return $mixed;
-            },
-            'float' => function($mixed) {
-                settype($mixed, 'float');
-                return $mixed;
-            }
-        ];
-
-        $array = [];
+        $convert = $this->getConversions();
+        $array   = [];
 
         foreach ($this->properties as $key => $value) {
             $property = is_int($key) ? $value : $key;
@@ -114,12 +122,6 @@ abstract class AbstractTransformer implements TransformerInterface
             }
 
             $array[$property] = is_int($key) ? $model->$property : $convert[$value]($model->$property);
-        }
-
-        foreach ($this->transforms as $transform) {
-            $result = $transform($model, $array);
-
-            is_array($result) && $array = array_merge($array, $result);
         }
 
         foreach ($this->relations as $relation => $transformer) {
@@ -142,6 +144,12 @@ abstract class AbstractTransformer implements TransformerInterface
 
             // One to one relation.
             $array[$snakeName] = $transform($model->$relation);
+        }
+
+        foreach ($this->transforms as $transform) {
+            $result = $transform($model, $array);
+
+            is_array($result) && $array = array_merge($array, $result);
         }
 
         return $array;
