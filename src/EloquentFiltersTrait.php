@@ -69,27 +69,45 @@ trait EloquentFiltersTrait
         $model = $this;
 
         foreach ($relations as $name) {
-            $relation   = $model->{$name}();
-            $related    = $relation->getRelated();
-            $table      = $related->getTable();
-            $foreignKey = $relation->getForeignKey();
+            /**
+             * Default relation is HasOne
+             */
+            $relation     = $model->{$name}();
+            $related      = $relation->getRelated();
+            $relatedTable = $related->getTable();
+            $foreignKey   = $relation->getForeignKey();
+            $localKey     = $relation->getQualifiedParentKeyName();
+
+            /**
+             * Inspect relation type and adjust foreign/local keys
+             */
+            $relationClass = explode('\\', get_class($relation));
+            $relationType  = array_pop($relationClass);
+
+            switch($relationType) {
+                case 'BelongsTo':
+                        $foreignKey = $relatedTable . '.' . $related->getKeyName();
+                        $localKey   = $model->getTable() . '.' . $relation->getForeignKey();
+                    break;
+                default:
+            }
 
             /**
              * Creating a kvp for joins to make sure it is unique.
              */
-            $joinKey = $table . $foreignKey . $model->getTable() . $related->getForeignKey();
+            $joinKey = $relatedTable . $foreignKey . $localKey;
 
             if (! isset($this->filterJoinsKeys[$joinKey])) {
-                $query->join($table, $foreignKey, '=', $model->getTable() . '.' . $related->getForeignKey());
+                $query->join($relatedTable, $foreignKey, '=', $localKey);
             }
 
             $this->filterJoinsKeys[$joinKey] = 1;
             $model = $related;
         }
 
-        $direction && $this->filterOrderBy($query, $table, $field, $direction);
+        $direction && $this->filterOrderBy($query, $relatedTable, $field, $direction);
 
-        $filter && $this->filterWhere($query, $table, $field, $filter);
+        $filter && $this->filterWhere($query, $relatedTable, $field, $filter);
 
         $query->select($this->getTable() . '.*'); // Get this model's properties
     }

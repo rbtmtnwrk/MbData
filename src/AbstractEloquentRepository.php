@@ -271,6 +271,13 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this->joinWhere($table, $one, $operator, $two, 'right');
     }
 
+    public function filter($relation, $filter = null, $direction = null)
+    {
+        $this->addCall('filter', func_get_args());
+
+        return $this;
+    }
+
     public function skip($value)
     {
         $this->addCall('skip', func_get_args());
