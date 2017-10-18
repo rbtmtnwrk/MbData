@@ -5,6 +5,8 @@ namespace MbData;
 trait EloquentFiltersTrait
 {
     protected $filterJoinsKeys = [];
+    protected $filterHasWheres = false;
+    protected $filterStrict    = false;
 
     private function filterWhere($query, $table, $field, $filter, $operator)
     {
@@ -12,8 +14,10 @@ trait EloquentFiltersTrait
         $operator = $operator ?: 'LIKE';
         $filter   = $operator == 'LIKE' ? "%$filter%" : $filter;
 
+        $whereType = $this->filterHasWheres && (! $this->filterStrict) ? 'orWhere' : 'where';
+
         if (is_array($field)) {
-            $query->where(function($query) use($prefix, $field, $filter) {
+            $query->{$whereType}(function($query) use($prefix, $field, $filter, $operator) {
                 foreach ($field as $i => $fld) {
                     if ($i) {
                         $query->orWhere($prefix . $fld, $operator, $filter);
@@ -24,10 +28,14 @@ trait EloquentFiltersTrait
                 }
             });
 
+            $this->filterHasWheres = true;
+
             return;
         }
 
-        $query->where($prefix . $field, $operator, $filter);
+        $query->{$whereType}($prefix . $field, $operator, $filter);
+
+        $this->filterHasWheres = true;
     }
 
     private function filterOrderBy($query, $table, $field, $direction)
@@ -179,6 +187,13 @@ trait EloquentFiltersTrait
             array_unshift($args, $query);
             call_user_func_array([$this, 'parseArguments'], $args);
         }
+    }
+
+    public function scopeFilterStrict($query, $relation, $operator = null, $filter = null, $direction = null)
+    {
+        $this->filterStrict = true;
+
+        call_user_func_array([$this, 'scopeFilter'], func_get_args());
     }
 }
 

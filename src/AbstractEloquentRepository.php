@@ -278,6 +278,13 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $this;
     }
 
+    public function filterStrict($relation, $operator = null, $filter = null, $direction = null)
+    {
+        $this->addCall('filterStrict', func_get_args());
+
+        return $this;
+    }
+
     public function skip($value)
     {
         $this->addCall('skip', func_get_args());
