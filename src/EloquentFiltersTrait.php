@@ -102,7 +102,7 @@ trait EloquentFiltersTrait
             $joinKey = $relatedTable . $foreignKey . $localKey;
 
             if (! isset($this->filterJoinsKeys[$joinKey])) {
-                $query->join($relatedTable, $foreignKey, '=', $localKey);
+                $query->leftJoin($relatedTable, $foreignKey, '=', $localKey);
             }
 
             $this->filterJoinsKeys[$joinKey] = 1;
