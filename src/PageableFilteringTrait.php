@@ -108,7 +108,7 @@ trait PageableFilteringTrait
              * If the property has a key value pair map the property name
              */
             $property  = isset($this->filterProperties[$this->sort->property]) ? $this->filterProperties[$this->sort->property] : $this->sort->property;
-            $filters[] = [$property, $this->sort->direction];
+            $property && $filters[] = [$property, $this->sort->direction];
         }
 
         $filters && $this->repository->filter($filters);
