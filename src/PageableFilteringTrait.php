@@ -3,10 +3,11 @@ namespace MbData;
 
 trait PageableFilteringTrait
 {
-    private $paging;
-    private $sort;
-    private $filter;
-    private $filterProperties;
+    protected $paging;
+    protected $sort;
+    protected $filter;
+    protected $filterProperties;
+    protected $searchParams;
 
     public function getPaging()
     {
@@ -50,6 +51,8 @@ trait PageableFilteringTrait
      */
     public function addSearchParams(array $params)
     {
+        $this->searchParams = $params;
+
         if (isset($params['sort'])) {
             $sort = json_decode($params['sort']);
             is_array($sort) && $sort = $sort[0];
@@ -68,6 +71,11 @@ trait PageableFilteringTrait
         isset($params['filter']) && $this->filter = $params['filter'];
 
         return $this;
+    }
+
+    public function getSearchParams()
+    {
+        return $this->searchParams;
     }
 
     /**
@@ -134,7 +142,7 @@ trait PageableFilteringTrait
      * Applies the paging values to the repository query.
      * @return this
      */
-    private function applyPaging()
+    protected function applyPaging()
     {
         $this->paging->start && $this->repository->skip($this->paging->start - 1);
         $this->paging->limit && $this->repository->take($this->paging->limit);
