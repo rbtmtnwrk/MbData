@@ -7,6 +7,7 @@ trait PageableFilteringTrait
     protected $sort;
     protected $filter;
     protected $filterProperties;
+    protected $filterColumns;
     protected $searchParams;
 
     public function getPaging()
@@ -43,6 +44,18 @@ trait PageableFilteringTrait
         $this->sort = $sort;
 
         return $this;
+    }
+
+    public function addFilterSelect($columns)
+    {
+        $this->filterColumns = $columns;
+
+        return $this;
+    }
+
+    public function getFilteringSelect()
+    {
+        return $this->filterColumns;
     }
 
     /**
@@ -111,7 +124,7 @@ trait PageableFilteringTrait
             $property && $filters[] = [$property, $this->sort->direction];
         }
 
-        $filters && $this->repository->filter($filters);
+        $filters && $this->repository->filter($filters, $this->filterColumns);
 
         return $this;
     }
@@ -129,8 +142,8 @@ trait PageableFilteringTrait
             return $paged;
         }
 
-        if (get_class($results) != 'Illuminate\Support\Collection') {
-            throw new Exception('Only arrays or Illuminate\Support\Collection is supported for pageResults');
+        if (! ($results instanceof \Illuminate\Support\Collection)) {
+            throw new \Exception('Only Collections is supported for pageResults');
         }
 
         $paged = $results->slice($this->paging->start, $this->paging->limit);

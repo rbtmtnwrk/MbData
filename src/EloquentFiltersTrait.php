@@ -118,7 +118,7 @@ trait EloquentFiltersTrait
          * Default to get this model's properties when columns are not specified.
          */
 
-        $columns = [$this->getTable() . '.*'] + $this->filterSelectColumns;
+        $columns = array_unique(array_merge([$this->getTable() . '.*'], $this->filterSelectColumns));
 
         $query->select($columns);
     }
