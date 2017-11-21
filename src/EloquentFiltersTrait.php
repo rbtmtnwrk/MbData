@@ -7,6 +7,7 @@ trait EloquentFiltersTrait
     protected $filterJoinsKeys = [];
     protected $filterHasWheres = false;
     protected $filterStrict    = false;
+    protected $filterSelectColumns = [];
 
     private function filterWhere($query, $table, $field, $filter, $operator)
     {
@@ -113,7 +114,13 @@ trait EloquentFiltersTrait
 
         $filter && $this->filterWhere($query, $relatedTable, $field, $filter, $operator);
 
-        $query->select($this->getTable() . '.*'); // Get this model's properties
+        /**
+         * Default to get this model's properties when columns are not specified.
+         */
+
+        $columns = [$this->getTable() . '.*'] + $this->filterSelectColumns;
+
+        $query->select($columns);
     }
 
     /**
@@ -166,12 +173,13 @@ trait EloquentFiltersTrait
     /**
      * Scope method for filtering and ordering relations. Method parameters are variable and can be mixed:
      * scopeFilter($query, [array of params])
+     * scopeFilter($query, [array of params], [array of filter select columns])
      * scopeFilter($query, 'posts.title', 'asc') // Sort only on posts.name
      * scopeFilter($query, 'posts.comments.comment', 'great') // filter posts comments for 'great'
      * scopeFilter($query, 'posts.id', '>', 50, 'desc') // filter post for ids > 50 and sort them desc
      * @param  Illuminate\Database\Query\Builder $query
      * @param  mixed $relation
-     * @param  string $operator
+     * @param  mixed $operator
      * @param  string $filter
      * @param  string $direction
      */
@@ -181,6 +189,17 @@ trait EloquentFiltersTrait
             $this->parseArguments($query, $relation, $operator, $filter, $direction);
 
             return;
+        }
+
+        /**
+         * When operator is an array, there are select columns being passed in.
+         * This how to specify what columns get included in the join. Needed
+         * for when there is a join that is not part of the filter, for
+         * example:
+         *     $model->filter(...)->join(...)->get();
+         */
+        if (is_array($operator)) {
+            $this->filterSelectColumns = $operator;
         }
 
         foreach ($relation as $args) {
