@@ -36,6 +36,17 @@ trait PageableFilteringTrait
         return $this;
     }
 
+    public function getFilteringProperties()
+    {
+        return $this->filteringProperties;
+    }
+
+    public function setFilteringProperties($filteringProperties)
+    {
+        $this->filteringProperties = $filteringProperties;
+        return $this;
+    }
+
     public function getSort()
     {
         return $this->sort;
