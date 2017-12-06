@@ -174,7 +174,7 @@ trait PageableFilteringTrait
     public function pageResults($results)
     {
         if (is_array($results)) {
-            $paged = array_slice($results, $this->paging->start - 1, $this->paging->limit - 1);
+            $paged = array_slice($results, $this->paging->start, $this->paging->limit);
 
             return $paged;
         }
@@ -183,7 +183,7 @@ trait PageableFilteringTrait
             throw new \Exception('Only Collections is supported for pageResults');
         }
 
-        $paged = $results->slice($this->paging->start - 1, $this->paging->limit - 1);
+        $paged = $results->slice($this->paging->start, $this->paging->limit);
 
         return $paged;
     }
@@ -194,7 +194,7 @@ trait PageableFilteringTrait
      */
     protected function applyPaging()
     {
-        $this->paging->start && $this->repository->skip($this->paging->start - 1);
+        $this->paging->start && $this->repository->skip($this->paging->start);
         $this->paging->limit && $this->repository->take($this->paging->limit);
 
         return $this;
