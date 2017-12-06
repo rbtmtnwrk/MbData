@@ -36,14 +36,15 @@ trait PageableFilteringTrait
         return $this;
     }
 
-    public function getFilteringProperties()
+    public function getFilterProperties()
     {
-        return $this->filteringProperties;
+        return $this->filterProperties;
     }
 
-    public function setFilteringProperties($filteringProperties)
+    public function setFilterProperties($filterProperties)
     {
-        $this->filteringProperties = $filteringProperties;
+        $this->filterProperties = $filterProperties;
+
         return $this;
     }
 
