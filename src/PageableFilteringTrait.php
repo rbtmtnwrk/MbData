@@ -9,6 +9,7 @@ trait PageableFilteringTrait
     protected $filterProperties;
     protected $filterColumns;
     protected $searchParams;
+    protected $strict;
 
     public function getPaging()
     {
@@ -66,22 +67,17 @@ trait PageableFilteringTrait
     {
         $this->searchParams = $params;
 
-        if (isset($params['sort'])) {
-            $sort = json_decode($params['sort']);
-            is_array($sort) && $sort = $sort[0];
+        isset($params['sort']) && $this->setSort($params['sort']);
 
-            $this->setSort($sort);
-        }
+        isset($params['filter']) && $this->setFilter($params['filter']);
 
-        $paging = ['page', 'start', 'limit'];
+        $paging = ['page', 'start', 'limit', 'sort', 'filter'];
 
         foreach ($paging as $param) {
             isset($params[$param]) ? $$param = $params[$param] : $$param = null;
         }
 
         $this->setPaging($page, $start, $limit);
-
-        isset($params['filter']) && $this->filter = $params['filter'];
 
         return $this;
     }
@@ -98,35 +94,69 @@ trait PageableFilteringTrait
     public function applyFiltering()
     {
         /**
-         * Set null default sort if none
-         */
-        (! $this->sort) && $this->sort = (object) ['property' => null];
-
-        /**
          * Set up filters if there are any, and set the sort direction if the property name matches.
          */
-        $filters = [];
+        $filters = $this->createFiltersArray();
 
-        if ($this->filter) {
-            foreach ($this->filterProperties as $key => $property) {
-                if ($key == $this->sort->property || $property == $this->sort->property) {
-                    $filters[] = [$property, $this->filter, $this->sort->direction];
-                    continue;
-                }
-
-                $filters[] = [$property, $this->filter];
-            }
-        } else {
+        if (! $filters) {
             /**
-             * If the property has a key value pair map the property name
+             * Validate sort property is a filter in local properties array before adding.
              */
             $property  = isset($this->filterProperties[$this->sort->property]) ? $this->filterProperties[$this->sort->property] : $this->sort->property;
             $property && $filters[] = [$property, $this->sort->direction];
         }
 
-        $filters && $this->repository->filter($filters, $this->filterColumns);
+        $method = $this->strict ? 'filterStrict' : 'filter';
+
+        $filters && $this->repository->{$method}($filters, $this->filterColumns);
 
         return $this;
+    }
+
+    /**
+     * Set to filter strict by using this method.
+     * @return this
+     */
+    public function applyFilteringStrict()
+    {
+        $this->strict = true;
+
+        return $this->applyFiltering();
+    }
+
+    /**
+     * Creates a filters array to be consumed by the repository filters methods.
+     */
+    protected function createFiltersArray()
+    {
+        $filters = [];
+
+        /**
+         * Filter single values across properties in the local filter properties array.
+         */
+        if (! is_array($this->filter)) {
+            foreach ($this->filterProperties as $property) {
+                $sort = ($property == $this->sort->property) ? $this->sort->direction : null;
+
+                $filters[] = [$property, $this->filter, $sort];
+            }
+
+            return $filters;
+        }
+
+        /**
+         * When filtering on multiple values, the query is more specific - filter on the properties given.
+         * Consumer will have to do work here to make sure it is a valid column before hand.
+         */
+        $this->strict = true;
+
+        foreach ($this->filter as $filter) {
+            $sort = ($filter->property == $this->sort->property) ? $this->sort->direction : null;
+
+            $filters[] = [$filter->property, $filter->value, $sort];
+        }
+
+        return $filters;
     }
 
     /**
@@ -137,7 +167,7 @@ trait PageableFilteringTrait
     public function pageResults($results)
     {
         if (is_array($results)) {
-            $paged = array_slice($results, $this->paging->start, $this->paging->limit);
+            $paged = array_slice($results, $this->paging->start - 1, $this->paging->limit - 1);
 
             return $paged;
         }
@@ -146,7 +176,7 @@ trait PageableFilteringTrait
             throw new \Exception('Only Collections is supported for pageResults');
         }
 
-        $paged = $results->slice($this->paging->start, $this->paging->limit);
+        $paged = $results->slice($this->paging->start - 1, $this->paging->limit - 1);
 
         return $paged;
     }
