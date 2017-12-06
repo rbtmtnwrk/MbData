@@ -10,6 +10,7 @@ trait PageableFilteringTrait
     protected $filterColumns;
     protected $searchParams;
     protected $strict;
+    protected $searchParamsTransformer;
 
     public function getPaging()
     {
@@ -67,11 +68,17 @@ trait PageableFilteringTrait
     {
         $this->searchParams = $params;
 
+        if ($this->searchParamsTransformer) {
+            $this->searchParamsTransformer->transform($this, $params);
+
+            return $this;
+        }
+
         isset($params['sort']) && $this->setSort($params['sort']);
 
         isset($params['filter']) && $this->setFilter($params['filter']);
 
-        $paging = ['page', 'start', 'limit', 'sort', 'filter'];
+        $paging = ['page', 'start', 'limit'];
 
         foreach ($paging as $param) {
             isset($params[$param]) ? $$param = $params[$param] : $$param = null;
