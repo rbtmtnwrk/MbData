@@ -171,8 +171,9 @@ trait PageableFilteringTrait
 
         foreach ($this->filter as $filter) {
             $sort = ($filter->property == $this->sort->property) ? $this->sort->direction : null;
+            $operator = property_exists($filter, 'operator') ? $filter->operator : null;
 
-            $filters[] = [$filter->property, $filter->value, $sort];
+            $filters[] = [$filter->property, $filter->value, $operator, $sort];
         }
 
         return $filters;
