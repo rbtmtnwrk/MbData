@@ -163,7 +163,7 @@ trait PageableFilteringTrait
             }
 
             if (! $sorted) {
-                $filters[] = [$this->sort->property, $sort];
+                $filters[] = [$this->sort->property, $this->sort->direction];
             }
 
             return $filters;
@@ -183,7 +183,7 @@ trait PageableFilteringTrait
         }
 
         if (! $sorted) {
-            $filters[] = [$this->sort->property, $sort];
+            $filters[] = [$this->sort->property, $this->sort->direction];
         }
 
         return $filters;
