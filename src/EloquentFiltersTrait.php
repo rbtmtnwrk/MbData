@@ -132,14 +132,31 @@ trait EloquentFiltersTrait
      * @param  string $filter
      * @param  string $direction
      */
-    private function parseArguments($query, $relation, $operator, $filter = null, $direction = null)
+    private function parseArguments($query, $relation, $operator = 'LIKE', $filter = null, $direction = null)
     {
+        // var_dump(print_r([
+        //         'file'      => __FILE__ . ' on ' . __LINE__,
+        //         'relation'  => $relation,
+        //         'operator'  => $operator,
+        //         'filter'    => $filter,
+        //         'direction' => $direction,
+        //     ], true));
+
+        /**
+         * If there is a relation and a filter, make sure the operator get the default LIKE, ie ['last', null, 'Smith'] should get ['last', 'LIKE', 'Smith']
+         */
+        if ($relation && $filter && (strtolower($filter) != 'asc' && strtolower($filter) != 'desc')) {
+            $operator = $operator ?: 'LIKE';
+        }
+
+        $operator && $operator = strtoupper($operator);
+
         /**
          * When there is an operation in the operator param.
          */
         if (in_array($operator, ['LIKE', '>', '<', '=', '!=', '<>'])) {
             /**
-             * Adjust for the filter param having a direction value
+             * Adjust for the filter param having a direction value, ie ['last', 'Smith', 'DESC'], so looking for Smith, Smithers, etc.
              */
             if (strtolower($filter == 'asc') || strtolower($filter) == 'desc') {
                 $this->filter($query, $relation, $operator, $f = null, $d = $filter);
@@ -148,7 +165,7 @@ trait EloquentFiltersTrait
             }
 
             /**
-             * Otherwise all the params line up
+             * Otherwise all the params line up, ie ['name', 'LIKE', 'Smith', 'DESC']
              */
             $this->filter($query, $relation, $operator, $filter, $direction);
 
@@ -156,7 +173,7 @@ trait EloquentFiltersTrait
         }
 
         /**
-         * Adjust for the operator having a direction value
+         * Adjust for the operator having a direction value, ie ['last', 'DESC']
          */
         if ((strtolower($operator) == 'asc') || (strtolower($operator) == 'desc')) {
             $this->filter($query, $relation, $o = null, $f = null, $d = $operator);
@@ -165,7 +182,7 @@ trait EloquentFiltersTrait
         }
 
         /**
-         * Otherwise the operator param is the filter.
+         * Otherwise the operator param is the filter, ie ['name', 'Smith']
          */
         $this->filter($query, $relation, $o = null, $f = $operator, $d = $filter);
     }
