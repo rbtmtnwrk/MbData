@@ -149,6 +149,7 @@ trait PageableFilteringTrait
     protected function createFiltersArray()
     {
         $filters = [];
+        $sorted  = false;
 
         /**
          * Filter single values across properties in the local filter properties array.
@@ -156,8 +157,13 @@ trait PageableFilteringTrait
         if (! is_array($this->filter)) {
             foreach ($this->filterProperties as $property) {
                 $sort = ($property == $this->sort->property) ? $this->sort->direction : null;
+                $sort && $sorted == true;
 
                 $filters[] = [$property, $this->filter, $sort];
+            }
+
+            if (! $sorted) {
+                $filters[] = [$this->sort->property, $sort];
             }
 
             return $filters;
@@ -174,6 +180,10 @@ trait PageableFilteringTrait
             $operator = property_exists($filter, 'operator') ? $filter->operator : null;
 
             $filters[] = [$filter->property, $operator, $filter->value, $sort];
+        }
+
+        if (! $sorted) {
+            $filters[] = [$this->sort->property, $sort];
         }
 
         return $filters;
