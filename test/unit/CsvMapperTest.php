@@ -58,9 +58,12 @@ class CsvMapperTest extends TestCase
         //     ], true));
 
         $this->assertEquals($properties['first']->csvColumn, 'first_name');
+        $this->assertEquals($properties['first']->index, 0);
         $this->assertEquals($properties['last']->csvColumn, 'last_name');
+        $this->assertEquals($properties['last']->index, 1);
         $this->assertEquals($properties['zip']->csvColumn, '');
         $this->assertEquals($properties['address']->csvColumn, 'street');
+        $this->assertEquals($properties['address']->index, 3);
     }
 }
 

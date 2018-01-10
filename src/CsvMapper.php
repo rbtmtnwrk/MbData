@@ -9,7 +9,7 @@ abstract class CsvMapper implements CsvMapperInterface
 
     public function addColumnProperty($column, $label, $keywords, $csvColumn = '')
     {
-        $this->columnProperties[$column] = (object) compact('column', 'label', 'keywords', 'csvColumn');
+        $this->columnProperties[$column] = (object) compact('column', 'label', 'keywords', 'csvColumn', 'index');
 
         return $this;
     }
@@ -42,7 +42,7 @@ abstract class CsvMapper implements CsvMapperInterface
 
     private function parseColumns($columns)
     {
-        foreach ($columns as $name) {
+        foreach ($columns as $i => $name) {
             foreach ($this->columnProperties as $key => $property) {
                 $search = explode(' ', $name);
                 $found  = false;
@@ -54,6 +54,11 @@ abstract class CsvMapper implements CsvMapperInterface
                 }
 
                 $found && $this->columnProperties[$key]->csvColumn = $name;
+
+                if ($found) {
+                    $this->columnProperties[$key]->csvColumn = $name;
+                    $this->columnProperties[$key]->index     = $i;
+                }
             }
         }
     }
