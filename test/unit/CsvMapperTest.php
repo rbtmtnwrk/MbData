@@ -28,6 +28,7 @@ class CsvMapperTest extends TestCase
                 'label'     => 'First Name',
                 'keywords'  => ['first'],
                 'csvColumn' => '',
+                'index'     => null,
             ];
 
         // var_dump(print_r([
@@ -48,22 +49,25 @@ class CsvMapperTest extends TestCase
             ->addColumnProperty('address', 'Address', ['address', 'street']);
 
 
-        $mapper->map(['first_name', 'last_name', 'phone', 'street']);
-
-        $properties = $mapper->getColumnProperties();
+        $map = $mapper->map(['first_name', 'last_name', 'phone', 'street']);
 
         // var_dump(print_r([
         //         'file' => __FILE__ . ' on ' . __LINE__,
         //         'properties' => $mapper->getColumnProperties(),
         //     ], true));
 
-        $this->assertEquals($properties['first']->csvColumn, 'first_name');
-        $this->assertEquals($properties['first']->index, 0);
-        $this->assertEquals($properties['last']->csvColumn, 'last_name');
-        $this->assertEquals($properties['last']->index, 1);
-        $this->assertEquals($properties['zip']->csvColumn, '');
-        $this->assertEquals($properties['address']->csvColumn, 'street');
-        $this->assertEquals($properties['address']->index, 3);
+        $this->assertEquals($map['first']->csvColumn, 'first_name');
+        $this->assertEquals($map['first']->index, 0);
+        $this->assertEquals($map['last']->csvColumn, 'last_name');
+        $this->assertEquals($map['last']->index, 1);
+        $this->assertEquals($map['zip']->csvColumn, '');
+        $this->assertEquals($map['address']->csvColumn, 'street');
+        $this->assertEquals($map['address']->index, 3);
+
+        /**
+         * Test get by index
+         */
+        $this->assertEquals('address', $mapper->getByIndex(3)->column);
     }
 }
 

@@ -6,8 +6,9 @@ abstract class CsvMapper implements CsvMapperInterface
 {
     protected $header;
     protected $columnProperties;
+    protected $indexed;
 
-    public function addColumnProperty($column, $label, $keywords, $csvColumn = '')
+    public function addColumnProperty($column, $label, $keywords, $csvColumn = '', $index =  null)
     {
         $this->columnProperties[$column] = (object) compact('column', 'label', 'keywords', 'csvColumn', 'index');
 
@@ -37,7 +38,7 @@ abstract class CsvMapper implements CsvMapperInterface
 
         $this->parseColumns($header);
 
-        return $this;
+        return $this->columnProperties;
     }
 
     private function parseColumns($columns)
@@ -61,5 +62,18 @@ abstract class CsvMapper implements CsvMapperInterface
                 }
             }
         }
+    }
+
+    public function getByIndex($index)
+    {
+        if (! $this->indexed) {
+            $this->indexed = [];
+
+            foreach ($this->columnProperties as $property) {
+                $property->index && $this->indexed[$property->index] = $property;
+            }
+        }
+
+        return $this->indexed[$index];
     }
 }
