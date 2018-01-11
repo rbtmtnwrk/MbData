@@ -64,16 +64,29 @@ abstract class CsvMapper implements CsvMapperInterface
         }
     }
 
+    public function extract($row)
+    {
+        $data = [];
+
+        foreach ($row as $index => $value) {
+            $property = $this->getByIndex($index);
+
+            $property && $data[$property->column] = $value;
+        }
+
+        return $data;
+    }
+
     public function getByIndex($index)
     {
         if (! $this->indexed) {
             $this->indexed = [];
 
             foreach ($this->columnProperties as $property) {
-                $property->index && $this->indexed[$property->index] = $property;
+                $property->index !== null && $this->indexed[$property->index] = $property;
             }
         }
 
-        return $this->indexed[$index];
+        return array_key_exists($index, $this->indexed) ? $this->indexed[$index] : null;
     }
 }

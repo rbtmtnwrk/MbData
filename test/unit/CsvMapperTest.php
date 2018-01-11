@@ -69,6 +69,28 @@ class CsvMapperTest extends TestCase
          */
         $this->assertEquals('address', $mapper->getByIndex(3)->column);
     }
+
+    public function test_extract()
+    {
+        $mapper = new DummyCsvMapper;
+
+        $mapper->addColumnProperty('first', 'First Name', ['first'])
+            ->addColumnProperty('last', 'Last Name', ['last'])
+            ->addColumnProperty('zip', 'Zip Code', ['zip', 'postal', 'code'])
+            ->addColumnProperty('address', 'Address', ['address', 'street']);
+
+        $map  = $mapper->map(['first_name', 'last_name', 'phone', 'street']);
+        $row  = ['Mary', 'Samples', '5558889999', '123 Plainsville Ave'];
+        $data = $mapper->extract($row);
+
+        $expected = [
+                'first'   => 'Mary',
+                'last'    => 'Samples',
+                'address' => '123 Plainsville Ave',
+            ];
+
+        $this->assertEquals($expected, $data);
+    }
 }
 
 /* End of file */
