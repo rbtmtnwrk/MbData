@@ -32,18 +32,14 @@ abstract class CsvMapper implements CsvMapperInterface
         //
     }
 
+    /**
+     * Maps header row to column properties.
+     * @param  array $header
+     * @return array
+     */
     public function map($header)
     {
-        $this->header = $header;
-
-        $this->parseColumns($header);
-
-        return $this->columnProperties;
-    }
-
-    private function parseColumns($columns)
-    {
-        foreach ($columns as $i => $name) {
+        foreach ($header as $i => $name) {
             foreach ($this->columnProperties as $key => $property) {
                 $search = explode(' ', $name);
                 $found  = false;
@@ -62,8 +58,15 @@ abstract class CsvMapper implements CsvMapperInterface
                 }
             }
         }
+
+        return $this->columnProperties;
     }
 
+    /**
+     * Extracts data from row into properties format.
+     * @param  array $row
+     * @return array
+     */
     public function extract($row)
     {
         $data = [];
@@ -77,6 +80,11 @@ abstract class CsvMapper implements CsvMapperInterface
         return $data;
     }
 
+    /**
+     * Gets propery by column index.
+     * @param  int $index
+     * @return Object
+     */
     public function getByIndex($index)
     {
         if (! $this->indexed) {
