@@ -56,12 +56,18 @@ class TransformerTest extends TestCase
         $foo->far = 'false';
         $foo->faz = '.5';
         $foo->fo  = 1;
+        $foo->bar = 0;
+        $foo->baz = 1;
+        $foo->biz = '1';
 
         $expectations = [
             'foo' => 1,
             'far' => false,
             'faz' => .5,
             'fo'  => '1',
+            'bar' => false,
+            'baz' => true,
+            'biz' => true,
         ];
 
         $transformer = new TransformerDummy;
@@ -70,6 +76,9 @@ class TransformerTest extends TestCase
             'far' => 'bool',
             'faz' => 'float',
             'fo'  => 'string',
+            'bar' => 'bool',
+            'baz' => 'bool',
+            'biz' => 'bool',
         ]);
 
         $transformation = $transformer->transform($foo);

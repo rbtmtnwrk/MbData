@@ -16,7 +16,7 @@ abstract class AbstractTransformer implements TransformerInterface
     {
         (! $this->conversions) && ($this->conversions = [
             'bool' => function($mixed) {
-                if ($mixed == 'true') {
+                if ($mixed === 'true' || intval($mixed) === 1) {
                     return true;
                 }
                 return false;
