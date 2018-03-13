@@ -18,7 +18,7 @@ interface TransformerInterface
 
     public function setSecurity($security);
 
-    public function transform($model);
+    public function transform(\MbData\ModelInterface $model);
 }
 
 /* End of file */

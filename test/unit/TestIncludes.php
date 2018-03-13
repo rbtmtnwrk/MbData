@@ -41,7 +41,7 @@ class SecurityService extends \MbData\AbstractEloquentSecurityService
     }
 }
 
-class ModelBase
+class ModelBase implements \MbData\ModelInterface
 {
     public $relations = [];
     /**
@@ -78,6 +78,11 @@ class ModelBase
     {
         $this->relations[$name] = true;
         $this->$name = $mixed;
+    }
+
+    public function relationLoaded($name)
+    {
+        return isset($this->relations[$name]);
     }
 }
 

@@ -4,6 +4,7 @@ namespace MbData;
 
 abstract class AbstractTransformer implements TransformerInterface
 {
+    protected $model      = null;
     protected $properties = [];
     protected $relations  = [];
     protected $transforms = [];
@@ -107,8 +108,10 @@ abstract class AbstractTransformer implements TransformerInterface
         return $transformer instanceof \Closure ? $transformer : $funcTransform;
     }
 
-    public function transform($model)
+    public function transform(\MbData\ModelInterface $model)
     {
+        $this->model = $model;
+
         $this->secure && $this->security && ($model = $this->security->secureModel($model, 'read'));
 
         $convert = $this->getConversions();
@@ -153,6 +156,23 @@ abstract class AbstractTransformer implements TransformerInterface
         }
 
         return $array;
+    }
+
+    public function relationLoaded($relation, $model = null)
+    {
+        if (! $model) {
+            if (! $this->model) {
+                throw new \Exception('No model provided for relationLoaded');
+            }
+
+            if (! $model instanceof \MbData\ModelInterface) {
+                throw new \Exception('\MbData\ModelInterface not implemented for given model ' . get_class($model));
+            }
+
+            $model = $this->model;
+        }
+
+        return $model->relationLoaded($relation) && count($model->{$relation});
     }
 }
 

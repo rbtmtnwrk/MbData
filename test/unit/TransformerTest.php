@@ -95,7 +95,7 @@ class TransformerTest extends TestCase
         }
     }
 
-    public function test_it_sets_and_creates_relations()
+    public function test_it_sets_and_creates_and_checks_relations()
     {
         $foo  = new Foo;
         $bar  = new Bar;
@@ -110,6 +110,9 @@ class TransformerTest extends TestCase
         $transformer->setProperties(['foo', 'far', 'faz'])->setRelation('bars', $barTransformer);
 
         $transformation = $transformer->transform($foo);
+
+        $this->assertTrue($transformer->relationLoaded('bars', $foo));
+        $this->assertTrue(!$transformer->relationLoaded('foo', $foo));
 
         $this->assertEquals($foo->foo, $transformation['foo']);
         $this->assertEquals($foo->far, $transformation['far']);
