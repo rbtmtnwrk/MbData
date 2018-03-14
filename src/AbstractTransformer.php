@@ -108,7 +108,7 @@ abstract class AbstractTransformer implements TransformerInterface
         return $transformer instanceof \Closure ? $transformer : $funcTransform;
     }
 
-    public function transform(\MbData\ModelInterface $model)
+    public function transform($model)
     {
         $this->model = $model;
 
@@ -128,7 +128,7 @@ abstract class AbstractTransformer implements TransformerInterface
         }
 
         foreach ($this->relations as $relation => $transformer) {
-            if (! isset($model->getRelations()[$relation])) {
+            if (! $this->relationLoaded($relation)) {
                 continue;
             }
 
@@ -163,10 +163,6 @@ abstract class AbstractTransformer implements TransformerInterface
         if (! $model) {
             if (! $this->model) {
                 throw new \Exception('No model provided for relationLoaded');
-            }
-
-            if (! $model instanceof \MbData\ModelInterface) {
-                throw new \Exception('\MbData\ModelInterface not implemented for given model ' . get_class($model));
             }
 
             $model = $this->model;
