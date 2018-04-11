@@ -10,6 +10,7 @@ MbData is a library that contains classes for data storage and transformation. T
 - [Transformers](#transformers)
     - [Named and Runtime Transformations](#named-and-runtime-transformations)
     - [Transformer Relations](#transformer-relations)
+    - [Relation Loaded](#relation-loaded)
 
 ## Repositories
 
@@ -384,3 +385,42 @@ class FooTransformer extends AbstractTransformer
     . . .
 }
 ```
+
+### Relation Loaded
+
+Use **relationLoaded** method to check for a loaded relation when overriding the transform method of a transformer.
+
+```
+public function relationLoaded($relation, $model = null)
+```
+
+**relationLoaded** will also check the relation has a count.
+
+```
+public function transform($model)
+{
+    $array = parent::transform($model);
+
+    $this->relationLoaded('category') && $array['category_name'] = $model->category->name;
+
+    $array['products_count'] = $this->relationLoaded('products') ? count($model->products) : 0;
+
+    return $array;
+}
+```
+
+#### Sub Relation
+
+Pass sub relations' parent in as the second parameter:
+
+```
+if ($this->relationLoaded('product')) {
+    $array['product_name'] = $model->product->name;
+    $array['product_code'] = $model->product->code;
+
+    if($this->relationLoaded('productType', $model->product)) {
+        $array['product_type_name'] = $model->product->productType->name;
+    }
+}
+```
+
