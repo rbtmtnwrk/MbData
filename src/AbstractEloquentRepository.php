@@ -114,7 +114,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         $columns      = $this->getColumns($columns);
         $this->entity = $this->getBuilder()->first($columns);
 
-        return $this->transform ? $this->doTransformation($this->entity) : $this->entity;
+        return $this->transform ? $this->doTransformation($this->entity) : $this->secureModel($this->entity, 'read');
     }
 
     public function get($columns = null)
@@ -133,16 +133,28 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     private function returnAll($entity)
     {
         if (! $this->index) {
-            return $entity;
+            if ($entity instanceof \Traversable) {
+                foreach ($entity as $i => $item) {
+                    $entity[$i] = $this->secureModel($item, 'read');
+                }
+
+                return $entity;
+            }
+
+            $temp = $this->secureModel($entity, 'read');
+            return $temp;
         }
 
-        $array = [];
+        if ($entity instanceof \Traversable) {
+            $array = [];
+            foreach ($entity as $item) {
+                $array[$item->{$this->index}] = $this->secureModel($item, 'read');
+            }
 
-        foreach ($entity as $item) {
-            $array[$item->{$this->index}] = $item;
+            return $array;
         }
 
-        return $array;
+        return $this->secureModel($entity, 'read');
     }
 
     private function addCall($name, $params)
@@ -354,6 +366,41 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         return $transform($transformable);
     }
 
+    /**
+     * Secures the given model against the loaded security object if any.
+     * @param  Model $model
+     * @param  string $action
+     * @return Model
+     */
+    private function secureModel($model, $action)
+    {
+         if ($this->secure && $this->security) {
+            /**
+             * A traversalble $model is the next recursive call into this model's relations.
+             */
+            if ($model instanceof \Traversable) {
+                foreach ($model as $key => $value) {
+                    $model[$key] = $this->secureModel($value, 'read');
+                }
+
+                return $model;
+            }
+
+            /**
+             * Else secure the model, and recurse into relations.
+             */
+            $model = $this->security->secureModel($model, 'read');
+
+            $relations = $model->getRelations();
+
+            foreach ($relations as $relation => $relationModel) {
+                $model->setRelation($relation, $this->secureModel($model->{$relation}, 'read'));
+            }
+        }
+
+        return $model;
+    }
+
     private function secureData($data, $action)
     {
         if ($this->secure && $this->security) {
@@ -449,7 +496,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
             $this->load($with);
         }
 
-        return $this->entity;
+        return $this->returnAll($this->entity);
     }
 
     public function thenGetWith($with = null)

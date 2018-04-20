@@ -1,6 +1,6 @@
 <?php
 
-require 'TestIncludes.php';
+require_once 'TestIncludes.php';
 
 /**
  * @TODO: Add closure tests. Refactor original tests for included classes.

@@ -1,6 +1,6 @@
 <?php
 
-class TransformerDummy extends \MbData\AbstractTransformer
+class RepositoryTransformerDummy extends \MbData\AbstractTransformer
 {
     private $foo;
 
@@ -32,7 +32,7 @@ class RepositoryTest extends TestCase
     public function test_call_transformer_method()
     {
         $repository = new RepositoryDummy;
-        $repository->setTransformer(new TransformerDummy);
+        $repository->setTransformer(new RepositoryTransformerDummy);
         $foo = 'Foo!';
 
         $repository->callTransformerMethod('setFoo', [$foo]);

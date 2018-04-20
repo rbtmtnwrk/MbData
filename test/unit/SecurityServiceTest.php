@@ -1,6 +1,6 @@
 <?php
 
-require 'TestIncludes.php';
+require_once 'TestIncludes.php';
 
 class SecurityServiceTest extends TestCase
 {
