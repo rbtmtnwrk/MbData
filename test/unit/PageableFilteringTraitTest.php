@@ -28,13 +28,13 @@ class PageableFilteringTraitTest extends TestCase
         //         'file'   => __FILE__ . ' on ' . __LINE__,
         //         'paging' => $paging,
         //         'sort'   => $sort,
-        //         'filter' => $service->getFilter(),
+        //         'getSort' => $service->getSort(),
         //     ], true));
 
         $this->assertEquals($params['page'], $paging->page);
         $this->assertEquals($params['start'], $paging->start);
         $this->assertEquals($params['limit'], $paging->limit);
-        $this->assertEquals($sort, $service->getSort());
+        $this->assertEquals($params['sort'], $service->getSort());
         $this->assertEquals($params['filter'], $service->getFilter());
     }
 
