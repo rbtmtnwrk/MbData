@@ -450,9 +450,7 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
         unset($data['id']); // Make sure the id is not updated.
 
         foreach ($columns as $column) {
-            if (array_key_exists($data[$column])) {
-                $entity->$column = $data[$column];
-            }
+            array_key_exists($column, $data) && $entity->$column = $data[$column];
         }
 
         if (! $entity->save()) {
