@@ -212,6 +212,35 @@ class TransformerTest extends TestCase
         $this->assertEquals($expectation, $transformation['foo_tastic']);
         $this->assertEquals(true, $transformer->hasTransform('footastic'));
     }
+
+    public function test_nonmodel_object_transform()
+    {
+        $foo = (object) [
+            'name' => 'Foo',
+            'bar' => [(object) [
+                'name' => 'Bar',
+            ]]
+        ];
+
+        $relation = 'bar';
+
+        $transformer = new TransformerDummy;
+        $transformer->setProperties([
+            'name',
+        ]);
+
+        $transformer->setRelation('bar', $transformer);
+        $transformed = $transformer->transform($foo);
+
+        // var_dump(print_r([
+        //     'loc' => __FILE__ . ' @ ' . __LINE__,
+        //     'foo' => $foo,
+        //     'transformed' => $transformed,
+        // ], true));
+
+        $this->assertTrue($transformed['name'] == 'Foo');
+        $this->assertTrue($transformed['bar'][0]['name'] == 'Bar');
+    }
 }
 
 /* End of file */

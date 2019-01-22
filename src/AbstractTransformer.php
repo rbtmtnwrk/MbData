@@ -137,7 +137,7 @@ abstract class AbstractTransformer implements TransformerInterface
             $transform         = $this->closure($transformer->setSecure($this->secure)->setSecurity($this->security));
 
             // Has many relations.
-            if ($model->$relation instanceof \Traversable) {
+            if ($model->$relation instanceof \Traversable || is_array($model->$relation)) {
                 foreach ($model->$relation as $related) {
                     $array[$snakeName][] = $transform($related);
                 }
@@ -168,7 +168,19 @@ abstract class AbstractTransformer implements TransformerInterface
             $model = $this->model;
         }
 
-        return $model->relationLoaded($relation) && count($model->{$relation});
+        if (method_exists($model, 'relationLoaded')) {
+            return $model->relationLoaded($relation);
+        }
+
+        /**
+         * For basic objects not implementing MbData/ModelInterface.
+         */
+
+        if (isset($model->{$relation})) {
+            return is_array($model->{$relation}) || ($model->{$relation} instanceof \Countable && count($model->{$relation})) || !empty($model->{$relation});
+        }
+
+        return false;
     }
 }
 
