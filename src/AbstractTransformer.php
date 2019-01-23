@@ -169,13 +169,12 @@ abstract class AbstractTransformer implements TransformerInterface
         }
 
         if (method_exists($model, 'relationLoaded')) {
-            return $model->relationLoaded($relation);
+            return $model->relationLoaded($relation) && count($model->{$relation});
         }
 
         /**
          * For basic objects not implementing MbData/ModelInterface.
          */
-
         if (isset($model->{$relation})) {
             return is_array($model->{$relation}) || ($model->{$relation} instanceof \Countable && count($model->{$relation})) || !empty($model->{$relation});
         }
