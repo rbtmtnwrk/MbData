@@ -241,6 +241,14 @@ class TransformerTest extends TestCase
         $this->assertTrue($transformed['name'] == 'Foo');
         $this->assertTrue($transformed['bar'][0]['name'] == 'Bar');
     }
+
+    public function test_null_transform()
+    {
+        $transformer = new BarTransformer;
+        $result      = $transformer->transform(NULL);
+
+        $this->assertEquals([], $result);
+    }
 }
 
 /* End of file */
