@@ -199,12 +199,12 @@ trait PageableFilteringTrait
         }
 
         if (! ($results instanceof \Illuminate\Support\Collection)) {
-            throw new \Exception('Only Collections is supported for pageResults');
+            throw new \Exception('Only Collections or arrays are supported for pageResults');
         }
 
         $paged = $results->slice($this->paging->start, $this->paging->limit);
 
-        return $paged;
+        return $paged->values();
     }
 
     /**
