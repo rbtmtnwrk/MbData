@@ -72,6 +72,7 @@ trait EloquentFiltersTrait
          * Add a join for each level of relations.
          */
         $model = $this;
+        $getForeignKeyMethod = method_exists($model, 'getForeignKey') ? 'getForeignKey' : 'getForeignKeyName';
 
         foreach ($relations as $name) {
             /**
@@ -80,7 +81,7 @@ trait EloquentFiltersTrait
             $relation     = $model->{$name}();
             $related      = $relation->getRelated();
             $relatedTable = $related->getTable();
-            $foreignKey   = $relation->getForeignKey();
+            $foreignKey   = $relation->{$getForeignKeyMethod}();
             $localKey     = $relation->getQualifiedParentKeyName();
 
             /**
@@ -92,7 +93,7 @@ trait EloquentFiltersTrait
             switch($relationType) {
                 case 'BelongsTo':
                         $foreignKey = $relatedTable . '.' . $related->getKeyName();
-                        $localKey   = $model->getTable() . '.' . $relation->getForeignKey();
+                        $localKey   = $model->getTable() . '.' . $relation->{$getForeignKeyMethod}();
                     break;
                 default:
             }
