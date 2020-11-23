@@ -92,8 +92,11 @@ trait EloquentFiltersTrait
 
             switch($relationType) {
                 case 'BelongsTo':
-                        $foreignKey = $relatedTable . '.' . $related->getKeyName();
-                        $localKey   = $model->getTable() . '.' . $relation->{$getForeignKeyMethod}();
+                    $foreignKey = $relatedTable . '.' . $related->getKeyName();
+                    $localKey   = $model->getTable() . '.' . $relation->{$getForeignKeyMethod}();
+                    break;
+                case 'HasOne':
+                    $foreignKey = $relatedTable . '.' . $foreignKey;
                     break;
                 default:
             }
