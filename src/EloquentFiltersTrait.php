@@ -78,7 +78,12 @@ trait EloquentFiltersTrait
             /**
              * Default relation is HasOne
              */
-            $relation     = $model->{$name}();
+            $relation = $model->{$name}();
+
+            if (!$getForeignKeyMethod) {
+                $getForeignKeyMethod = method_exists($relation, 'getForeignKey') ? 'getForeignKey' : 'getForeignKeyName';
+            }
+
             $related      = $relation->getRelated();
             $relatedTable = $related->getTable();
             $foreignKey   = $relation->{$getForeignKeyMethod}();
