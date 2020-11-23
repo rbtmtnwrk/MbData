@@ -72,7 +72,7 @@ trait EloquentFiltersTrait
          * Add a join for each level of relations.
          */
         $model = $this;
-        $getForeignKeyMethod = method_exists($model, 'getForeignKey') ? 'getForeignKey' : 'getForeignKeyName';
+        $getForeignKeyMethod = null;
 
         foreach ($relations as $name) {
             /**
