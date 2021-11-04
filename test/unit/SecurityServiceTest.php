@@ -2,7 +2,7 @@
 
 require_once 'TestIncludes.php';
 
-class SecurityServiceTest extends TestCase
+class SecurityServiceTest extends \Tests\TestCase
 {
     public function test_secureAttribute()
     {

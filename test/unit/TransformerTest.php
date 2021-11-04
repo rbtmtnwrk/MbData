@@ -6,7 +6,7 @@ require_once 'TestIncludes.php';
  * @TODO: Add closure tests. Refactor original tests for included classes.
  */
 
-class TransformerTest extends TestCase
+class TransformerTest extends \Tests\TestCase
 {
     public function test_it_sets_params_and_returns_an_array()
     {

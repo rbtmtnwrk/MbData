@@ -22,7 +22,7 @@ class RepositoryDummy extends \MbData\AbstractEloquentRepository
     //
 }
 
-class RepositoryTest extends TestCase
+class RepositoryTest extends \Tests\TestCase
 {
     public function test_call_transformer_method()
     {

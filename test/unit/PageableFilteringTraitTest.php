@@ -5,7 +5,7 @@ class DummyService
     use \MbData\PageableFilteringTrait;
 }
 
-class PageableFilteringTraitTest extends TestCase
+class PageableFilteringTraitTest extends \Tests\TestCase
 {
     public function test_params()
     {

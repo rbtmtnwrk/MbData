@@ -1,5 +1,4 @@
 <?php
-
 use \MbData\CarbonDateTransformableTrait;
 
 class CarbonTransformable
@@ -7,7 +6,7 @@ class CarbonTransformable
     use CarbonDateTransformableTrait;
 }
 
-class CarbonTransformableTest extends TestCase
+class CarbonTransformableTest extends \Tests\TestCase
 {
     public function test_it_resets()
     {

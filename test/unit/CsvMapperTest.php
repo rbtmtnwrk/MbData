@@ -5,7 +5,7 @@ class DummyCsvMapper extends \MbData\CsvMapper
     //
 }
 
-class CsvMapperTest extends TestCase
+class CsvMapperTest extends \Tests\TestCase
 {
     public function dummy_csv()
     {
