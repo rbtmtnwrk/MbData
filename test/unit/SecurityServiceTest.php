@@ -4,11 +4,6 @@ require_once 'TestIncludes.php';
 
 class SecurityServiceTest extends TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     public function test_secureAttribute()
     {
         $service = new SecurityService;

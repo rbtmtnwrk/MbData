@@ -9,11 +9,6 @@ class CarbonTransformable
 
 class CarbonTransformableTest extends TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     public function test_it_resets()
     {
         $transformable = new CarbonTransformable;

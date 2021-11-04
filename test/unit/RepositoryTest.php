@@ -24,11 +24,6 @@ class RepositoryDummy extends \MbData\AbstractEloquentRepository
 
 class RepositoryTest extends TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     public function test_call_transformer_method()
     {
         $repository = new RepositoryDummy;

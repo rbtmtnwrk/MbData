@@ -8,11 +8,6 @@ require_once 'TestIncludes.php';
 
 class TransformerTest extends TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     public function test_it_sets_params_and_returns_an_array()
     {
         $foo = new Foo;
