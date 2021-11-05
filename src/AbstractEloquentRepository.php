@@ -167,8 +167,6 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     public function where($column, $operator = null, $value = null)
     {
         $params = func_get_args();
-        $params['boolean'] = 'and';
-
         $this->addCall('where', $params);
 
         return $this;
@@ -191,8 +189,6 @@ abstract class AbstractEloquentRepository implements RepositoryInterface, Eloque
     public function orWhere($column, $operator = null, $value = null)
     {
         $params = func_get_args();
-        $params['boolean'] = 'or';
-
         $this->addCall('orWhere', $params);
 
         return $this;
